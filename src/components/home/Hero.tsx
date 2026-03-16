@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { useTranslations, useLocale } from 'next-intl';
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
 
 // Static Component Imports

@@ -7,6 +7,30 @@ import CategorySlider from '@/components/home/CategorySlider';
 import React from 'react';
 import lightsBanner from "../../../public/images/lights.png";
 
+// Static Category Image Imports
+import outdoor_wifi_camera from "../../../public/images/categories/outdoor_wifi_camera.jpeg";
+import solar_smart_cameras from "../../../public/images/categories/solar_smart_cameras.png";
+import robot_vacuum from "../../../public/images/categories/robot_vacuum.jpeg";
+import smart_intercom from "../../../public/images/categories/smart_intercom.jpeg";
+import smart_locks from "../../../public/images/categories/smart_locks.jpeg";
+import zigbee_products from "../../../public/images/categories/zigbee_products.jpg";
+import cameras_4g from "../../../public/images/categories/4g_cameras.jpeg";
+import battery_cameras from "../../../public/images/categories/battery_cameras.png";
+import indoor_wifi_camera from "../../../public/images/categories/indoor_wifi_camera.jpeg";
+import nvr from "../../../public/images/categories/nvr.png";
+
+import smart_ac_control from "../../../public/images/categories/smart_ac_control.jpg";
+import gateway_bridge from "../../../public/images/categories/gateway_bridge.jpeg";
+import smart_lighting from "../../../public/images/categories/smart_lighting.jpeg";
+import central_control_panel from "../../../public/images/categories/central_control_panel.png";
+import diy_smart_switches from "../../../public/images/categories/diy_smart_switches.jpg";
+import sensors from "../../../public/images/categories/sensors.jpeg";
+import accessories from "../../../public/images/categories/accessories.jpeg";
+import wifi_wall_switches from "../../../public/images/categories/wifi_wall_switches.png";
+import water_level_meter from "../../../public/images/categories/water_level_meter.jpeg";
+import smart_curtains from "../../../public/images/categories/smart_curtains.jpeg";
+import smart_plugs from "../../../public/images/categories/smart_plugs.jpeg";
+
 export default async function HomePage({
   params
 }: {
@@ -29,29 +53,29 @@ export default async function HomePage({
 
       <div className="mb-2 mt-2 md:mt-8 space-y-1 md:space-y-2">
         <CategorySlider categories={[
-          { id: 'outdoor_wifi_camera', img: 'https://smartyjo.com/wp-content/uploads/2025/02/OIP-13.jpeg', slug: 'outdoor-wifi-camera-2' },
-          { id: 'solar_smart_cameras', img: 'https://smartyjo.com/wp-content/uploads/2025/02/7acf702f9e6a0ecba0401559e67590ca.png', slug: 'solar-smart-camera' },
-          { id: 'robot_vacuum', img: 'https://smartyjo.com/wp-content/uploads/2025/02/a5540e070170389029e6cd4bc7d2c559.jpeg', slug: 'robot-vacuum' },
-          { id: 'smart_intercom', img: 'https://smartyjo.com/wp-content/uploads/2025/02/96cb807a71ec04780d58620f17270cec.jpeg', slug: 'smart-intercom' },
-          { id: 'smart_locks', img: 'https://smartyjo.com/wp-content/uploads/2025/02/OIP-17.jpeg', slug: 'smart-lock-2' },
-          { id: 'zigbee_products', img: 'https://smartyjo.com/wp-content/uploads/2025/02/sonoff-snzb-02p.jpg', slug: 'zigbee-smart-products' },
-          { id: '4g_cameras', img: 'https://smartyjo.com/wp-content/uploads/2025/02/cs-eb8-4g.jpeg', slug: '4g-security-camera' },
-          { id: 'battery_cameras', img: 'https://smartyjo.com/wp-content/uploads/2025/02/5a48948c26519afe012428167af08c08-1024x1024.png', slug: 'battery-wifi-camera' },
-          { id: 'indoor_wifi_camera', img: 'https://smartyjo.com/wp-content/uploads/2025/02/OIP-24.jpeg', slug: 'indoor-wifi-camera-2' },
-          { id: 'nvr', img: 'https://smartyjo.com/wp-content/uploads/2025/02/96ec8d758e29083be45b249e012d99c7.png', slug: 'nvr' }
+          { id: 'outdoor_wifi_camera', img: outdoor_wifi_camera, slug: 'outdoor-wifi-camera-2' },
+          { id: 'solar_smart_cameras', img: solar_smart_cameras, slug: 'solar-smart-camera' },
+          { id: 'robot_vacuum', img: robot_vacuum, slug: 'robot-vacuum' },
+          { id: 'smart_intercom', img: smart_intercom, slug: 'smart-intercom' },
+          { id: 'smart_locks', img: smart_locks, slug: 'smart-lock-2' },
+          { id: 'zigbee_products', img: zigbee_products, slug: 'zigbee-smart-products' },
+          { id: '4g_cameras', img: cameras_4g, slug: '4g-security-camera' },
+          { id: 'battery_cameras', img: battery_cameras, slug: 'battery-wifi-camera' },
+          { id: 'indoor_wifi_camera', img: indoor_wifi_camera, slug: 'indoor-wifi-camera-2' },
+          { id: 'nvr', img: nvr, slug: 'nvr' }
         ]} />
         <CategorySlider categories={[
-          { id: 'smart_ac_control', img: 'https://smartyjo.com/wp-content/uploads/2025/03/1973002989-e1741897298697.jpg', slug: 'ac-control-smart' },
-          { id: 'gateway_bridge', img: 'https://smartyjo.com/wp-content/uploads/2025/02/b97ca14a85b0a7b0dd0ba24a5ce61fce.jpeg', slug: 'gateway-bridge' },
-          { id: 'smart_lighting', img: 'https://smartyjo.com/wp-content/uploads/2025/02/b6c92a27c7f310b609503c85922c65d4.jpeg', slug: 'smart-lighting' },
-          { id: 'central_control_panel', img: 'https://smartyjo.com/wp-content/uploads/2025/03/Central-Icon.png', slug: 'central-control-panel' },
-          { id: 'diy_smart_switches', img: 'https://smartyjo.com/wp-content/uploads/2025/02/sonoff-mini-r4-extreme-matter.jpg', slug: 'smart-switches' },
-          { id: 'sensors', img: 'https://smartyjo.com/wp-content/uploads/2025/02/bd474b7001dd900015cbec187061521b.jpeg', slug: 'sensor' },
-          { id: 'accessories', img: 'https://smartyjo.com/wp-content/uploads/2025/02/OIP-2.jpeg', slug: 'accessories' },
-          { id: 'wifi_wall_switches', img: 'https://smartyjo.com/wp-content/uploads/2025/02/fc42d8a2a44b90a7ecc867231dbb8858.png', slug: 'smart-wall-switches' },
-          { id: 'water_level_meter', img: 'https://smartyjo.com/wp-content/uploads/2025/02/swp-nh.jpeg', slug: 'smart-water-level' },
-          { id: 'smart_curtains', img: 'https://smartyjo.com/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-09-at-6.17.37-PM-1-1024x1024.jpeg', slug: 'smart-motorized-curtain-track' },
-          { id: 'smart_plugs', img: 'https://smartyjo.com/wp-content/uploads/2025/02/OIP-2-1.jpeg', slug: 'smart-plugs' }
+          { id: 'smart_ac_control', img: smart_ac_control, slug: 'ac-control-smart' },
+          { id: 'gateway_bridge', img: gateway_bridge, slug: 'gateway-bridge' },
+          { id: 'smart_lighting', img: smart_lighting, slug: 'smart-lighting' },
+          { id: 'central_control_panel', img: central_control_panel, slug: 'central-control-panel' },
+          { id: 'diy_smart_switches', img: diy_smart_switches, slug: 'smart-switches' },
+          { id: 'sensors', img: sensors, slug: 'sensor' },
+          { id: 'accessories', img: accessories, slug: 'accessories' },
+          { id: 'wifi_wall_switches', img: wifi_wall_switches, slug: 'smart-wall-switches' },
+          { id: 'water_level_meter', img: water_level_meter, slug: 'smart-water-level' },
+          { id: 'smart_curtains', img: smart_curtains, slug: 'smart-motorized-curtain-track' },
+          { id: 'smart_plugs', img: smart_plugs, slug: 'smart-plugs' }
         ]} />
       </div>
 

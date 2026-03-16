@@ -128,7 +128,14 @@
     "shop_now": "Shop Now",
     "products_count": "{count} products",
     "products": "Products",
-    "sidebar_filters": "Filters"
+    "sidebar_filters": "Filters",
+    "tax_included": "Tax Included",
+    "authorized_partner": "Authorized Smart Partner",
+    "secure_checkout": "Secure Checkout in Jordan",
+    "error_phone": "Please enter a valid phone number",
+    "error_general": "Something went wrong. Please try again.",
+    "view_full_details": "View Full Details",
+    "qty": "Qty"
   },
   "home": {
     "title_line1": "Upgrade Your Living",

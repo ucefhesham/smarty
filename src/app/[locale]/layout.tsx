@@ -82,7 +82,7 @@ export default async function LocaleLayout({
             <div className="hidden md:block">
               <StickyCategoryNav initialCategories={categories} />
             </div>
-            <main className="flex-grow ps-0 md:ps-[70px] pt-[70px] md:pt-[118px] pb-20 md:pb-0">
+            <main className="flex-grow pl-0 md:pl-[70px] pt-[70px] md:pt-[118px] pb-20 md:pb-0">
               <Suspense fallback={null}>
                 <PageLoader />
               </Suspense>

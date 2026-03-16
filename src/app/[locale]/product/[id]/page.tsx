@@ -13,7 +13,7 @@ import ProductPurchaseActions from '@/components/product/ProductPurchaseActions'
 import ProductAttributes from '@/components/product/ProductAttributes';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RefreshCw, Star, Share2, Facebook, Twitter, Instagram as InstagramIcon, Linkedin, Grid, ChevronLeft, ChevronRight, Tags, MessageCircle, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import { Link } from '@/navigation';
 
 async function getProduct(idOrSlug: string, lang = 'en') {
   if (/^\d+$/.test(idOrSlug)) {
@@ -91,7 +91,7 @@ export default async function ProductPage({
       const results = await Promise.all(
         product.categories.map((cat: any) => getCategoryWPC(cat.name, locale))
       );
-      return results.find(res => res !== null) || null;
+      return results.filter(res => res !== null)[0] || null;
     })(),
     (async () => {
       if (product.type === 'variable') {

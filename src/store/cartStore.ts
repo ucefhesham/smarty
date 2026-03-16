@@ -24,17 +24,24 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       addItem: (newItem) => {
-        const existingItem = get().items.find((item) => item.id === newItem.id);
-        if (existingItem) {
-          set({
-            items: get().items.map((item) =>
-              item.id === newItem.id
-                ? { ...item, quantity: item.quantity + newItem.quantity }
-                : item
-            ),
-          });
+        const items = get().items;
+        let existingIndex = -1;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].id === newItem.id) {
+            existingIndex = i;
+            break;
+          }
+        }
+
+        if (existingIndex !== -1) {
+          const updatedItems = [...items];
+          updatedItems[existingIndex] = {
+            ...updatedItems[existingIndex],
+            quantity: updatedItems[existingIndex].quantity + newItem.quantity
+          };
+          set({ items: updatedItems });
         } else {
-          set({ items: [...get().items, newItem] });
+          set({ items: [...items, newItem] });
         }
       },
       removeItem: (id) => set({ items: get().items.filter((item) => item.id !== id) }),

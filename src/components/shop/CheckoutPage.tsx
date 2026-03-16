@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useTranslations } from "next-intl";
 import { createOrder } from "@/app/actions/order";
 import { motion } from "framer-motion";
 import { ShoppingBag, CheckCircle2, ArrowLeft, Phone, MapPin, CreditCard, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -45,18 +45,21 @@ export default function CheckoutPage({
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const gatewaysById = useMemo(() => new Map(initialPaymentGateways.map(g => [g.id, g])), [initialPaymentGateways]);
+  const defaultGateway = gatewaysById.get('cod') || initialPaymentGateways[0];
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     phone: "+962 ",
     email: "",
-    city: "",
+    city: "Amman",
     address: "",
     notes: "",
-    payment_method: initialPaymentGateways.find(g => g.id === 'cod')?.id || initialPaymentGateways[0]?.id || "cod",
-    payment_method_title: initialPaymentGateways.find(g => g.id === 'cod')?.title || initialPaymentGateways[0]?.title || "Cash on Delivery",
+    payment_method: defaultGateway?.id || "cod",
+    payment_method_title: defaultGateway?.title || t('cash_on_delivery'),
     shipping_method: initialShippingMethods[0]?.id || "free_shipping",
-    shipping_method_title: initialShippingMethods[0]?.title || "Free Shipping"
+    shipping_method_title: initialShippingMethods[0]?.title || t('free_shipping')
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -96,7 +99,7 @@ export default function CheckoutPage({
     // Validate phone length
     const phoneDigits = formData.phone.replace(/\D/g, '');
     if (phoneDigits.length < 12) {
-      setError(locale === 'ar' ? "يرجى إدخال رقم هاتف صحيح" : "Please enter a valid phone number");
+      setError(t('error_phone'));
       setIsProcessing(false);
       return;
     }
@@ -107,7 +110,7 @@ export default function CheckoutPage({
       setIsSuccess(true);
       clearCart();
     } else {
-      setError(result.error || "Something went wrong. Please try again.");
+      setError(result.error || t('error_general'));
     }
     setIsProcessing(false);
   };
@@ -301,7 +304,7 @@ export default function CheckoutPage({
                     <div className="flex-grow flex flex-col justify-center space-y-2">
                        <h4 className="font-black text-slate-900 text-sm line-clamp-2 leading-tight group-hover:text-primary transition-colors">{item.name}</h4>
                        <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center px-3 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-widest">Qty: {item.quantity}</span>
+                          <span className="inline-flex items-center px-3 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('qty')}: {item.quantity}</span>
                           <span className="font-black text-primary">{(item.price * item.quantity).toFixed(2)} {t('currency')}</span>
                        </div>
                     </div>
@@ -326,7 +329,7 @@ export default function CheckoutPage({
                  <div className="flex justify-between pt-8 border-t-2 border-slate-200">
                     <div className="space-y-1">
                        <span className="text-2xl font-black text-slate-900 block tracking-tighter">{t('total')}</span>
-                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tax Included</span>
+                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('tax_included')}</span>
                     </div>
                     <span className="text-4xl font-black text-primary tracking-tighter">{totalPrice().toFixed(2)} {t('currency')}</span>
                  </div>
@@ -335,11 +338,11 @@ export default function CheckoutPage({
               <div className="p-6 bg-white/50 rounded-3xl border border-white/50 space-y-3">
                  <div className="flex items-center gap-3 text-slate-400 font-bold text-xs">
                     <CheckCircle2 size={14} className="text-primary" />
-                    <span>Authorized Smart Partner</span>
+                    <span>{t('authorized_partner')}</span>
                  </div>
                  <div className="flex items-center gap-3 text-slate-400 font-bold text-xs">
                     <CheckCircle2 size={14} className="text-primary" />
-                    <span>Secure Checkout in Jordan</span>
+                    <span>{t('secure_checkout')}</span>
                  </div>
               </div>
            </div>

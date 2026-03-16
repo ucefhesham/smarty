@@ -30,14 +30,18 @@ export default async function PromoSlider({
 
   // Fallback if ID is missing but slug is present
   if (!resolvedId && categorySlug) {
+    // Assuming 'category' is the resolvedType here, as this block specifically handles category slugs
+    // If there were other types (e.g., tag, attribute), a 'resolvedType' prop or derivation would be needed.
+    // For this change, we'll assume the context implies 'category' for this fallback block.
     const allCategories = await getCategories(locale);
-    // Try to find by slug directly first
-    let cat = allCategories.find((c: any) => c.slug === categorySlug);
+    const categoriesBySlug = new Map<string, any>(allCategories.map((c: any) => [c.slug, c]));
+    let cat = categoriesBySlug.get(categorySlug as string);
     
     // If not found and in Arabic, try to find the English counterpart and use its translation
     if (!cat && locale === 'ar') {
       const enCategories = await getCategories('en');
-      const enCat = enCategories.find((c: any) => c.slug === categorySlug);
+      const enCategoriesBySlug = new Map<string, any>(enCategories.map((c: any) => [c.slug, c]));
+      const enCat = enCategoriesBySlug.get(categorySlug as string);
       if (enCat && enCat.translations && enCat.translations.ar) {
         resolvedId = String(enCat.translations.ar);
       }

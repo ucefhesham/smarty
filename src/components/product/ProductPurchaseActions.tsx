@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { cn, parsePrice } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { ShoppingCart, MessageCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from "@/navigation";
 import { useRouter } from '@/navigation';
 import { useCartStore } from '@/store/cartStore';
 import AddToCartButton from './AddToCartButton';
@@ -34,18 +34,28 @@ export default function ProductPurchaseActions({ product, categoryOptions, varia
   const totalPrice = (basePrice + extraPrice) * quantity;
   const isOutOfStock = selectedVariation ? selectedVariation.stock_status === 'outofstock' : (product.stock_status === 'outofstock');
 
+  // PREPARE VARIATION MAP
+  // Key format: attrName1:option1|attrName2:option2|...
+  const variationMap = useMemo(() => {
+    const map = new Map<string, any>();
+    variations.forEach(v => {
+      const sortedAttrs = [...v.attributes].sort((a, b) => a.name.localeCompare(b.name));
+      const key = sortedAttrs.map((attr: any) => `${attr.name}:${attr.option}`).join('|');
+      map.set(key, v);
+    });
+    return map;
+  }, [variations]);
+
   // Handle variation matching
   useEffect(() => {
     if (variations.length > 0 && Object.keys(selectedAttributes).length > 0) {
-      const match = variations.find(v => {
-        // v.attributes is an array of objects { id, name, option }
-        return v.attributes.every((attr: any) => {
-          return selectedAttributes[attr.name] === attr.option;
-        });
-      });
+      const sortedSelectedEntries = Object.entries(selectedAttributes).sort((a, b) => a[0].localeCompare(b[0]));
+      const queryKey = sortedSelectedEntries.map(([name, option]) => `${name}:${option}`).join('|');
+      
+      const match = variationMap.get(queryKey);
       setSelectedVariation(match || null);
     }
-  }, [selectedAttributes, variations]);
+  }, [selectedAttributes, variations, variationMap]);
 
   const handleQuantityChange = (val: number) => {
     if (val < 1) return;

@@ -30,11 +30,15 @@ const colorMap: Record<string, string> = {
   'blue-de': '#0ea5e9',
 };
 
+import { useMemo } from 'react';
+
 export default function Sidebar({ categories, brands, attributes, activeCategory, activeBrand }: SidebarProps) {
   const t = useTranslations('common');
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  
+  const categoriesById = useMemo(() => new Map(categories.map(c => [String(c.id), c])), [categories]);
   
   const currentCategory = activeCategory || searchParams.get('category');
   const currentBrand = activeBrand || searchParams.get('brand');
@@ -58,7 +62,7 @@ export default function Sidebar({ categories, brands, attributes, activeCategory
     const params = new URLSearchParams(searchParams.toString());
     
     if (key === 'category') {
-      const cat = categories.find(c => String(c.id) === value);
+      const cat = categoriesById.get(value);
       const targetSlug = cat?.slug || '';
       
       if (currentCategory === value) {

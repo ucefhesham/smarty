@@ -79,13 +79,21 @@ export default async function ShopPage({
   const allBrands = Array.isArray(realBrands) ? realBrands : [];
   const allAttributes = Array.isArray(rawAttributes) ? rawAttributes : [];
 
-  // Fetch terms for all attributes in parallel
-  const attributesWithTerms = await Promise.all(
-    allAttributes.map(async (attr) => {
-      const terms = await getAttributeTerms(String(attr.id), locale);
-      return { ...attr, terms: Array.isArray(terms) ? terms.filter((t: any) => t.count > 0) : [] };
-    })
-  );
+  // PREPARE LOOKUPS ONCE PER REQUEST
+  const brandsBySlug = new Map(allBrands.map(b => [decodeURIComponent(b.slug), b]));
+  const brandsById = new Map(allBrands.map(b => [b.id, b]));
+  const categoriesBySlug = new Map(allCategories.map(c => [decodeURIComponent(c.slug), c]));
+  const categoriesById = new Map(allCategories.map(c => [c.id, c]));
+
+  // Fetch terms for all attributes sequentially to avoid overloading the API
+  const attributesWithTerms = [];
+  for (const attr of allAttributes) {
+    const terms = await getAttributeTerms(String(attr.id), locale);
+    attributesWithTerms.push({ 
+      ...attr, 
+      terms: Array.isArray(terms) ? terms.filter((t: any) => t.count > 0) : [] 
+    });
+  }
 
   const queryParams = new URLSearchParams();
 
@@ -101,7 +109,7 @@ export default async function ShopPage({
     if (slug[0] === 'brand' && slug[1]) {
       brandSlugArg = decodeURIComponent(slug[1]);
       
-      const b = allBrands.find(b => decodeURIComponent(b.slug) === brandSlugArg);
+      const b = brandsBySlug.get(brandSlugArg);
       if (b) {
         queryParams.set('product_brand', String(b.id));
         queryParams.set('brand', String(b.id));
@@ -113,7 +121,7 @@ export default async function ShopPage({
         
         if (bOther && bOther.translations && bOther.translations[locale]) {
           const targetId = bOther.translations[locale];
-          const targetBrand = allBrands.find(b => b.id === targetId);
+          const targetBrand = brandsById.get(targetId);
           if (targetBrand) {
             redirect({ href: `/shop/brand/${targetBrand.slug}`, locale });
           }
@@ -123,7 +131,7 @@ export default async function ShopPage({
     } else {
       const slugToFind = slug[slug.length - 1];
       const decodedSlugToFind = decodeURIComponent(slugToFind);
-      let cat = allCategories.find(c => decodeURIComponent(c.slug) === decodedSlugToFind);
+      let cat = categoriesBySlug.get(decodedSlugToFind);
       
       if (!cat) {
         const otherLocale = locale === 'en' ? 'ar' : 'en';
@@ -132,7 +140,7 @@ export default async function ShopPage({
         
         if (otherCat && otherCat.translations && otherCat.translations[locale]) {
           const targetId = otherCat.translations[locale];
-          const targetCat = allCategories.find(c => c.id === targetId);
+          const targetCat = categoriesById.get(targetId);
           if (targetCat) {
              redirect({ href: `/shop/${targetCat.slug}`, locale });
           }
@@ -160,9 +168,9 @@ export default async function ShopPage({
   const displayNameRaw = search
     ? `${t('search_results')}: "${search}"`
     : categoryId 
-      ? allCategories.find(c => String(c.id) === categoryId)?.name 
+      ? categoriesById.get(Number(categoryId))?.name 
       : brandSlugArg
-        ? allBrands.find(b => b.slug === brandSlugArg)?.name || brandSlugArg
+        ? brandsBySlug.get(brandSlugArg)?.name || brandSlugArg
         : t('shop_all_products');
 
   const displayName = displayNameRaw?.includes('%') ? decodeURIComponent(displayNameRaw) : displayNameRaw;

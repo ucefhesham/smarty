@@ -128,7 +128,14 @@
     "shop_now": "تسوق الآن",
     "products_count": "{count} منتج",
     "products": "المنتجات",
-    "sidebar_filters": "الفلاتر"
+    "sidebar_filters": "الفلاتر",
+    "tax_included": "شامل الضريبة",
+    "authorized_partner": "شريك ذكي معتمد",
+    "secure_checkout": "دفع آمن في الأردن",
+    "error_phone": "يرجى إدخال رقم هاتف صحيح",
+    "error_general": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "view_full_details": "عرض التفاصيل الكاملة",
+    "qty": "الكمية"
   },
   "home": {
     "title_line1": "ارتقِ بأسلوب حياتك",
@@ -138,7 +145,7 @@
     "arrivals_cta": "وصل حديثاً",
     "alexa_title": "أمازون أليكسا",
     "locks_title": "أقفال ذكية",
-    "sonoff_title": "سونوف كترولوجيا",
+    "sonoff_title": "سونوف",
     "promo_title": "التحكم في الإضاءة الذكية",
     "banner_title": "حياة عصرية",
     "banner_subtitle": "حلول الإضاءة الذكية",

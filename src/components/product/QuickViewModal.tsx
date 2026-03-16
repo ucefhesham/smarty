@@ -5,8 +5,8 @@ import { useCartStore } from "@/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Check, Star, ArrowRight, Share2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Link } from "@/navigation";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import ProductAttributes from "./ProductAttributes";
 import { getProductVariationsAction } from "@/app/actions/products";
@@ -44,17 +44,27 @@ export default function QuickViewModal() {
     }
   }, [quickViewProduct, locale]);
 
+  // PREPARE VARIATION MAP
+  const variationMap = useMemo(() => {
+    const map = new Map<string, any>();
+    variations.forEach(v => {
+      const sortedAttrs = [...v.attributes].sort((a, b) => a.name.localeCompare(b.name));
+      const key = sortedAttrs.map((attr: any) => `${attr.name}:${attr.option}`).join('|');
+      map.set(key, v);
+    });
+    return map;
+  }, [variations]);
+
   // Handle Variation Matching
   useEffect(() => {
-    if (variations.length > 0) {
-      const match = variations.find(v => 
-        v.attributes.every((attr: any) => 
-          selectedAttributes[attr.name] === attr.option
-        )
-      );
+    if (variations.length > 0 && Object.keys(selectedAttributes).length > 0) {
+      const sortedSelectedEntries = Object.entries(selectedAttributes).sort((a, b) => a[0].localeCompare(b[0]));
+      const queryKey = sortedSelectedEntries.map(([name, option]) => `${name}:${option}`).join('|');
+      
+      const match = variationMap.get(queryKey);
       setSelectedVariation(match || null);
     }
-  }, [selectedAttributes, variations]);
+  }, [selectedAttributes, variations, variationMap]);
 
   if (!quickViewProduct) return null;
 
@@ -246,8 +256,8 @@ export default function QuickViewModal() {
                  onClick={() => setQuickViewProduct(null)}
                  className="text-xs font-black text-slate-400 hover:text-primary flex items-center gap-2 transition-colors uppercase tracking-widest"
                >
-                 View Full Details
-                 <ArrowRight size={14} />
+                   {t('view_full_details')}
+                   <ArrowRight size={14} />
                </Link>
                
                <button className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors">

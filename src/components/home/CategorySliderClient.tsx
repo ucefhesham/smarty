@@ -10,7 +10,7 @@ import { useLocale, useTranslations } from 'next-intl';
 interface CategoryItem {
   id: string;
   name: string;
-  img: string;
+  img: any;
   slug: string;
   localizedSlug: string;
   count: number;

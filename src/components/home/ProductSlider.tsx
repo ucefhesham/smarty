@@ -31,13 +31,13 @@ export default async function ProductSlider({
     
     if (resolvedType === 'category') {
       const allCategories = await getCategories(locale);
-      // Try to find by slug directly first
-      let cat = allCategories.find((c: any) => c.slug === categorySlug);
+      const categoriesBySlug = new Map<string, any>(allCategories.map((c: any) => [c.slug, c]));
+      let cat = categoriesBySlug.get(categorySlug as string);
       
-      // If not found and in Arabic, try to find the English counterpart and use its translation
       if (!cat && locale === 'ar') {
         const enCategories = await getCategories('en');
-        const enCat = enCategories.find((c: any) => c.slug === categorySlug);
+        const enCategoriesBySlug = new Map<string, any>(enCategories.map((c: any) => [c.slug, c]));
+        const enCat = enCategoriesBySlug.get(categorySlug as string);
         if (enCat && enCat.translations && enCat.translations.ar) {
           resolvedId = String(enCat.translations.ar);
         }
@@ -46,11 +46,13 @@ export default async function ProductSlider({
       }
     } else if (resolvedType === 'brand') {
       const allBrands = await getBrands(locale);
-      let brand = allBrands.find((b: any) => b.slug === brandSlug);
+      const brandsBySlug = new Map<string, any>(allBrands.map((b: any) => [b.slug, b]));
+      let brand = brandsBySlug.get(brandSlug as string);
       
       if (!brand && locale === 'ar') {
         const enBrands = await getBrands('en');
-        const enBrand = enBrands.find((b: any) => b.slug === brandSlug);
+        const enBrandsBySlug = new Map<string, any>(enBrands.map((b: any) => [b.slug, b]));
+        const enBrand = enBrandsBySlug.get(brandSlug as string);
         if (enBrand && enBrand.translations && enBrand.translations.ar) {
           resolvedId = String(enBrand.translations.ar);
         }

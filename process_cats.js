@@ -1,7 +1,17 @@
+const dataCache = require('./src/lib/dataCache.server');
 
-const fs = require('fs');
-const path = require('path');
-const cats = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'temp_cats.json'), 'utf8'));
+async function main() {
+  // Initialize cache if not already done
+  await dataCache.init();
 
-const relevantCats = cats.map(c => ({ name: c.name, slug: c.slug }));
-console.log(JSON.stringify(relevantCats, null, 2));
+  const catsById = dataCache.getCategoriesById();
+  const cats = Array.from(catsById.values());
+
+  const relevantCats = cats.map(c => ({ name: c.name, slug: c.slug }));
+  console.log(JSON.stringify(relevantCats, null, 2));
+}
+
+main().catch(err => {
+  console.error('Error in process_cats.js:', err);
+  process.exit(1);
+});

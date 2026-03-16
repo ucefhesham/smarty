@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
 
 export interface Product {
@@ -19,13 +22,41 @@ export interface GetProductsResponse {
   totalPages: number;
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3, backoff = 500): Promise<Response> {
+  let lastError: any;
+  
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      
+      // Retry on 5xx errors or network-related failures
+      if (response.ok || (response.status >= 400 && response.status < 500)) {
+        return response;
+      }
+      
+      console.warn(`Fetch attempt ${i + 1} failed with status ${response.status}. Retrying in ${backoff * (i + 1)}ms...`);
+      lastError = new Error(`Status ${response.status}: ${response.statusText}`);
+    } catch (error: any) {
+      lastError = error;
+      console.warn(`Fetch attempt ${i + 1} failed with error: ${error.message}. Retrying in ${backoff * (i + 1)}ms...`);
+    }
+    
+    if (i < retries - 1) {
+      await sleep(backoff * (i + 1));
+    }
+  }
+  
+  throw lastError || new Error('Fetch failed after multiple attempts');
+}
+
 export async function fetchFromWP(endpoint: string, options: RequestInit = {}): Promise<any> {
   if (!API_URL) {
     console.error("NEXT_PUBLIC_WORDPRESS_API_URL is not defined");
     return { data: [], total: 0, totalPages: 0 };
   }
   
-  // Ensure we don't have double slashes if API_URL has trailing slash
   const cleanBase = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${cleanBase}${cleanEndpoint}`;
@@ -35,7 +66,6 @@ export async function fetchFromWP(endpoint: string, options: RequestInit = {}): 
     ...(options.headers as Record<string, string>),
   };
 
-  // Add auth if available
   if (process.env.WORDPRESS_AUTH_USER && process.env.WORDPRESS_AUTH_PASS) {
     const auth = Buffer.from(`${process.env.WORDPRESS_AUTH_USER}:${process.env.WORDPRESS_AUTH_PASS}`).toString('base64');
     headers['Authorization'] = `Basic ${auth}`;
@@ -43,25 +73,24 @@ export async function fetchFromWP(endpoint: string, options: RequestInit = {}): 
 
   let response;
   try {
-    response = await fetch(url, {
+    response = await fetchWithRetry(url, {
       ...options,
       headers,
-      next: { revalidate: 3600, ...options.next }, // Default 1 hour revalidation
+      next: { revalidate: 3600, ...options.next },
     });
   } catch (error: any) {
-    console.error(`Fetch failed for URL: ${url}. Error: ${error?.message || error}`);
+    console.error(`Fetch failed for URL: ${url} after retries. Error: ${error?.message || error}`);
     throw error;
   }
 
   if (!response.ok) {
-    // Handle WooCommerce "out of range" page requests gracefully
     if (response.status === 400) {
       const errorData = await response.json().catch(() => ({}));
       if (errorData.code === 'rest_post_invalid_page_number') {
         return { data: [], total: 0, totalPages: 0 };
       }
     }
-    throw new Error(`Failed to fetch from WordPress: ${response.statusText}`);
+    throw new Error(`Failed to fetch from WordPress: ${response.status} ${response.statusText}`);
   }
 
   const data = await response.json();
@@ -126,7 +155,9 @@ export async function getProducts(query = '', lang = 'en'): Promise<GetProductsR
         let brandId = brandValue;
         if (!/^\d+$/.test(brandValue)) {
           const allBrands = await getBrands(lang);
-          const brand = allBrands.find((b: any) => decodeURIComponent(b.slug) === decodeURIComponent(brandValue));
+          const decodeBrandValue = decodeURIComponent(brandValue);
+          const brandsBySlug = new Map<string, any>(allBrands.map((b: any) => [decodeURIComponent(b.slug), b]));
+          const brand = brandsBySlug.get(decodeBrandValue);
           if (brand) brandId = String(brand.id);
         }
         if (/^\d+$/.test(brandId)) {
@@ -139,7 +170,8 @@ export async function getProducts(query = '', lang = 'en'): Promise<GetProductsR
       for (const [taxonomy, slug] of Object.entries(attributeFilters)) {
         // We need the ID for the term slug
         const terms = await getAttributeTerms(taxonomy, lang);
-        const term = terms.find((t: any) => t.slug === slug);
+        const termsBySlug = new Map<string, any>(terms.map((t: any) => [t.slug, t]));
+        const term = termsBySlug.get(slug);
         if (term) {
           filterQuery += `&${taxonomy}=${term.id}`;
         }
@@ -221,11 +253,24 @@ export async function getProductVariations(productId: number, lang = 'en') {
 }
 
 export async function getCategories(lang = 'en') {
-  const res = await fetchFromWP(`/wc/v3/products/categories?lang=${lang}&per_page=100`, { 
-    next: { revalidate: 86400 } // 24 hours for categories
-  });
-  const data = res.data || res;
-  return Array.isArray(data) ? data : [];
+  try {
+    const res = await fetchFromWP(`/wc/v3/products/categories?lang=${lang}&per_page=100`, { 
+      next: { revalidate: 86400 } // 24 hours for categories
+    });
+    const data = res.data || res;
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('getCategories fetch failed, attempting local fallback');
+    try {
+      const filePath = path.join(process.cwd(), 'temp_cats.json');
+      if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
+    } catch (fallbackError) {
+      console.error('Local fallback for categories failed:', fallbackError);
+    }
+    return [];
+  }
 }
 
 export async function getBrands(lang = 'en') {
@@ -236,7 +281,15 @@ export async function getBrands(lang = 'en') {
     const data = res.data || res;
     return Array.isArray(data) ? data : [];
   } catch (e) {
-    console.warn('product_brand taxonomy not found, returning empty');
+    console.warn('product_brand taxonomy not found or fetch failed, attempting local fallback');
+    try {
+      const filePath = path.join(process.cwd(), 'temp_product_brands.json');
+      if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
+    } catch (fallbackError) {
+      console.error('Local fallback for brands failed:', fallbackError);
+    }
     return [];
   }
 }
@@ -264,20 +317,26 @@ export async function getAttributes(lang = 'en') {
     });
     return Array.isArray(res) ? res : (res.data || []);
   } catch (e) {
-    console.error("getAttributes error:", e);
+    console.warn('getAttributes fetch failed, attempting local fallback');
+    try {
+      const filePath = path.join(process.cwd(), 'temp_attrs.json');
+      if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
+    } catch (fallbackError) {
+      console.error('Local fallback for attributes failed:', fallbackError);
+    }
     return [];
   }
 }
 
 export async function getAttributeTerms(taxonomy: string, lang = 'en') {
   try {
-    // taxonomy could be an ID (from attribute.id) or a slug (like pa_color)
-    // WooCommerce REST API /wc/v3/products/attributes/<id>/terms
-    // But we might only have the slug. We need the ID.
     let attrId = taxonomy;
     if (isNaN(Number(taxonomy))) {
       const allAttrs = await getAttributes(lang);
-      const attr = allAttrs.find((a: any) => a.slug === taxonomy);
+      const attrsBySlug = new Map<string, any>(allAttrs.map((a: any) => [a.slug, a]));
+      const attr = attrsBySlug.get(taxonomy);
       if (attr) attrId = String(attr.id);
     }
 

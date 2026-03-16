@@ -5,7 +5,7 @@ import { useUIStore } from "@/store/uiStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 

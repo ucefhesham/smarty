@@ -6,7 +6,7 @@ import path from 'path';
 
 interface CategoryItem {
   id: string;
-  img: string;
+  img: any;
   slug: string;
 }
 
@@ -34,25 +34,30 @@ export default async function CategorySlider({ categories }: CategorySliderProps
     console.error('Failed to load temp_cats.json', e);
   }
 
+  // PREPARE LOOKUPS
+  const catMappingBySlug = new Map<string, any>(catMapping.map(c => [c.slug, c]));
+  const allCategoriesById = new Map<number, any>(allCategories.map((c: any) => [c.id, c]));
+  const allCategoriesBySlug = new Map<string, any>(allCategories.map((c: any) => [c.slug, c]));
+
   const localizedCategories = categories.map(cat => {
     let localizedSlug = cat.slug;
     let count = 0;
 
     // 1. Find the English category entry to get its ID and translations
-    const enCatEntry = catMapping.find((c: any) => c.slug === cat.slug);
+    const enCatEntry = catMappingBySlug.get(cat.slug);
     
     if (enCatEntry) {
         const targetId = locale === 'ar' ? enCatEntry.translations?.ar : enCatEntry.id;
         
         // 2. Find the WP category in the current locale's list by ID
-        const wpCat = allCategories.find((c: any) => c.id === targetId);
+        const wpCat = allCategoriesById.get(targetId);
         if (wpCat) {
             localizedSlug = wpCat.slug;
             count = wpCat.count;
         }
     } else {
         // Fallback for categories not in mapping
-        const wpCat = allCategories.find((c: any) => c.slug === cat.slug);
+        const wpCat = allCategoriesBySlug.get(cat.slug);
         if (wpCat) {
             count = wpCat.count;
             localizedSlug = wpCat.slug;
