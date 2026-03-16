@@ -3,6 +3,59 @@ import path from 'path';
 
 const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
 
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const apiCache = new Map<string, CacheEntry<any>>();
+
+// Cache TTL strategies (in milliseconds)
+const CACHE_TTL = {
+  // Products: short-lived due to price/inventory changes
+  '/wc/v3/products': 60 * 1000, // 1 minute
+  '/wc/v3/products/*': 60 * 1000, // Product variations
+  
+  // Categories/brands: change infrequently
+  '/wc/v3/products/categories': 24 * 60 * 60 * 1000, // 24 hours
+  '/wp/v2/product_brand': 24 * 60 * 60 * 1000, // 24 hours
+  
+  // Default fallback
+  default: 5 * 60 * 1000 // 5 minutes
+};
+
+// Helper to determine TTL for endpoint
+function getCacheTtl(endpoint: string): number {
+  // Check for exact matches first
+  if ((CACHE_TTL as any)[endpoint]) return (CACHE_TTL as any)[endpoint];
+  
+  // Check for pattern matches (e.g., /wc/v3/products/123)
+  for (const [pattern, ttl] of Object.entries(CACHE_TTL)) {
+    if (pattern.endsWith('*') && endpoint.startsWith(pattern.slice(0, -1))) {
+      return ttl;
+    }
+  }
+  
+  return CACHE_TTL.default;
+}
+
+// Helper to generate cache key
+function generateCacheKey(endpoint: string, options: RequestInit = {}): string {
+  // Include relevant options that affect response
+  const keyParts = [endpoint];
+  
+  if (options.headers) {
+    const headers = options.headers as Record<string, string>;
+    // Only include headers that affect response variability
+    const relevantHeaders = ['Accept', 'Authorization', 'Lang'];
+    relevantHeaders.forEach(h => {
+      if (headers[h]) keyParts.push(`${h}:${headers[h]}`);
+    });
+  }
+  
+  return keyParts.join('|');
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -71,6 +124,19 @@ export async function fetchFromWP(endpoint: string, options: RequestInit = {}): 
     headers['Authorization'] = `Basic ${auth}`;
   }
 
+  // Generate cache key
+  const cacheKey = generateCacheKey(endpoint, options);
+  
+  // Check cache for valid entry
+  const cached = apiCache.get(cacheKey);
+  if (cached) {
+    const age = Date.now() - cached.timestamp;
+    const ttl = getCacheTtl(endpoint);
+    if (age < ttl) {
+      return cached.data;
+    }
+  }
+
   let response;
   try {
     response = await fetchWithRetry(url, {
@@ -98,6 +164,12 @@ export async function fetchFromWP(endpoint: string, options: RequestInit = {}): 
   // If it's a list with pagination headers, return them too
   const total = response.headers.get('X-WP-Total');
   const totalPages = response.headers.get('X-WP-TotalPages');
+
+  // Store in cache before returning
+  apiCache.set(cacheKey, { 
+    data: Array.isArray(data) ? [...data] : { ...data },
+    timestamp: Date.now() 
+  });
 
   if (total && totalPages) {
     return {
@@ -275,7 +347,7 @@ export async function getCategories(lang = 'en') {
 
 export async function getBrands(lang = 'en') {
   try {
-    const res = await fetchFromWP(`/wp/v2/product_brand?lang=${lang}&per_page=100`, {
+    const res = await fetchFromWP(`/wp/v2/product_brand?lang=${lang}&per_page=100`, { 
       next: { revalidate: 86400 } // 24 hours for brands
     });
     const data = res.data || res;

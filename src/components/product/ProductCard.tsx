@@ -9,7 +9,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { useCompareStore } from '@/store/compareStore';
 import { useUIStore } from '@/store/uiStore';
 import { useCartStore } from '@/store/cartStore';
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 export default function ProductCard({ product }: { product: any }) {
   const t = useTranslations('common');
@@ -30,16 +30,20 @@ export default function ProductCard({ product }: { product: any }) {
     setMounted(true);
   }, []);
 
-  const discount = product.on_sale && product.regular_price 
-    ? Math.round((1 - (parseFloat(product.price) / parseFloat(product.regular_price))) * 100)
-    : 0;
+  const discount = useMemo(() => {
+    return product.on_sale && product.regular_price 
+      ? Math.round((1 - (parseFloat(product.price) / parseFloat(product.regular_price))) * 100)
+      : 0;
+  }, [product.on_sale, product.price, product.regular_price]);
 
-  const brand = (product.brands?.[0]?.name || product.brand || "Smarty");
+  const brand = useMemo(() => {
+    return (product.brands?.[0]?.name || product.brand || "Smarty");
+  }, [product.brands, product.brand]);
 
   const isFavorite = mounted && isInWishlist(product.id);
   const isCompared = mounted && isInCompare(product.id);
 
-  const toggleWishlist = (e: React.MouseEvent) => {
+  const toggleWishlist = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isInWishlist(product.id)) {
@@ -53,9 +57,9 @@ export default function ProductCard({ product }: { product: any }) {
         slug: product.slug
       });
     }
-  };
+  }, [isInWishlist, removeFromWishlist, addToWishlist, product.id, product.name, product.price, product.images, product.slug]);
 
-  const toggleCompare = (e: React.MouseEvent) => {
+  const toggleCompare = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isInCompare(product.id)) {
@@ -73,15 +77,15 @@ export default function ProductCard({ product }: { product: any }) {
         attributes: product.attributes
       });
     }
-  };
+  }, [isInCompare, removeFromCompare, addToCompare, product.id, product.sku, product.name, product.price, product.images, product.slug, product.short_description, product.stock_status, product.attributes]);
 
-  const handleQuickView = (e: React.MouseEvent) => {
+  const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setQuickViewProduct(product);
-  };
+  }, [setQuickViewProduct, product]);
 
-  const handleBuyNow = (e: React.MouseEvent) => {
+  const handleBuyNow = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (product.type === 'simple') {
@@ -97,9 +101,9 @@ export default function ProductCard({ product }: { product: any }) {
     } else {
       setQuickViewProduct(product);
     }
-  };
+  }, [product.type, product.id, product.name, product.price, product.images, clearCart, addItem, router, setQuickViewProduct]);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (product.type === 'simple') {
@@ -114,7 +118,7 @@ export default function ProductCard({ product }: { product: any }) {
     } else {
       setQuickViewProduct(product);
     }
-  };
+  }, [product.type, product.id, product.name, product.price, product.images, addItem, openCart, setQuickViewProduct]);
 
   return (
     <div className="luxury-card group flex flex-col h-full bg-white overflow-hidden relative border border-slate-100 rounded-[10px] p-4 transition-all duration-300">
