@@ -1,0 +1,585 @@
+[
+  {
+    "id": 5,
+    "name": "Ampere",
+    "slug": "pa_amber",
+    "terms": [
+      {
+        "id": 70,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 1577,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 71,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      },
+      {
+        "id": 1579,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "brands",
+    "slug": "pa_brands",
+    "terms": [
+      {
+        "id": 138,
+        "name": "Acer",
+        "slug": "acer",
+        "count": 0
+      },
+      {
+        "id": 139,
+        "name": "Apple",
+        "slug": "apple",
+        "count": 0
+      },
+      {
+        "id": 140,
+        "name": "Asus",
+        "slug": "asus",
+        "count": 0
+      },
+      {
+        "id": 153,
+        "name": "Dell",
+        "slug": "dell",
+        "count": 0
+      },
+      {
+        "id": 161,
+        "name": "Gionee",
+        "slug": "gionee",
+        "count": 0
+      },
+      {
+        "id": 170,
+        "name": "HP",
+        "slug": "hp",
+        "count": 0
+      },
+      {
+        "id": 171,
+        "name": "HTC",
+        "slug": "htc",
+        "count": 0
+      },
+      {
+        "id": 172,
+        "name": "IBM",
+        "slug": "ibm",
+        "count": 0
+      },
+      {
+        "id": 175,
+        "name": "Lenova",
+        "slug": "lenova",
+        "count": 0
+      },
+      {
+        "id": 176,
+        "name": "LG",
+        "slug": "lg",
+        "count": 0
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "CH",
+    "slug": "pa_ch",
+    "terms": [
+      {
+        "id": 95,
+        "name": "4 CH",
+        "slug": "4-ch",
+        "count": 1
+      },
+      {
+        "id": 1569,
+        "name": "4 CH",
+        "slug": "4-ch",
+        "count": 1
+      },
+      {
+        "id": 96,
+        "name": "8 CH",
+        "slug": "8-ch",
+        "count": 1
+      },
+      {
+        "id": 1571,
+        "name": "8 CH",
+        "slug": "8-ch",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Color",
+    "slug": "pa_color",
+    "terms": [
+      {
+        "id": 141,
+        "name": "Black",
+        "slug": "black-de",
+        "count": 1
+      },
+      {
+        "id": 19,
+        "name": "Black",
+        "slug": "black",
+        "count": 13
+      },
+      {
+        "id": 142,
+        "name": "Black Leather",
+        "slug": "black-leather-de",
+        "count": 0
+      },
+      {
+        "id": 143,
+        "name": "Black Leather",
+        "slug": "black-leather",
+        "count": 0
+      },
+      {
+        "id": 144,
+        "name": "Black with Red",
+        "slug": "black-with-red",
+        "count": 0
+      },
+      {
+        "id": 97,
+        "name": "Blue",
+        "slug": "blue",
+        "count": 3
+      },
+      {
+        "id": 145,
+        "name": "Blue",
+        "slug": "blue-de",
+        "count": 0
+      },
+      {
+        "id": 149,
+        "name": "Champagne",
+        "slug": "champagne-de",
+        "count": 0
+      },
+      {
+        "id": 150,
+        "name": "Charcoal",
+        "slug": "charcoal-de",
+        "count": 0
+      },
+      {
+        "id": 162,
+        "name": "Gold",
+        "slug": "gold",
+        "count": 0
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Gang",
+    "slug": "pa_gang",
+    "terms": [
+      {
+        "id": 41,
+        "name": "1 gang",
+        "slug": "1-gang",
+        "count": 10
+      },
+      {
+        "id": 1545,
+        "name": "1 gang",
+        "slug": "1-gang",
+        "count": 11
+      },
+      {
+        "id": 1547,
+        "name": "2 gang",
+        "slug": "2-gang",
+        "count": 11
+      },
+      {
+        "id": 42,
+        "name": "2 gang",
+        "slug": "2-gang",
+        "count": 10
+      },
+      {
+        "id": 1549,
+        "name": "3 gang",
+        "slug": "3-gang",
+        "count": 8
+      },
+      {
+        "id": 43,
+        "name": "3 gang",
+        "slug": "3-gang",
+        "count": 8
+      },
+      {
+        "id": 1551,
+        "name": "4 gang",
+        "slug": "4-gang",
+        "count": 5
+      },
+      {
+        "id": 44,
+        "name": "4 gang",
+        "slug": "4-gang",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Model",
+    "slug": "pa_model",
+    "terms": [
+      {
+        "id": 77,
+        "name": "4CHPROR3",
+        "slug": "4chpror3",
+        "count": 1
+      },
+      {
+        "id": 1573,
+        "name": "4CHPROR3",
+        "slug": "4chpror3",
+        "count": 1
+      },
+      {
+        "id": 76,
+        "name": "4CHR3",
+        "slug": "4chr3",
+        "count": 1
+      },
+      {
+        "id": 1575,
+        "name": "4CHR3",
+        "slug": "4chr3",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Pow",
+    "slug": "pa_pow",
+    "terms": [
+      {
+        "id": 74,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 1591,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 75,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      },
+      {
+        "id": 1593,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Resolution",
+    "slug": "pa_resolution",
+    "terms": [
+      {
+        "id": 1581,
+        "name": "2 MP",
+        "slug": "2-mp",
+        "count": 1
+      },
+      {
+        "id": 89,
+        "name": "2 MP",
+        "slug": "2-mp",
+        "count": 1
+      },
+      {
+        "id": 1585,
+        "name": "2k + 5 MP",
+        "slug": "2k-5-mp",
+        "count": 2
+      },
+      {
+        "id": 1583,
+        "name": "2k 4MP",
+        "slug": "2k-4mp",
+        "count": 1
+      },
+      {
+        "id": 91,
+        "name": "2k 4MP",
+        "slug": "2k-4mp",
+        "count": 1
+      },
+      {
+        "id": 92,
+        "name": "2K+ 5 MP",
+        "slug": "2k-5-mp",
+        "count": 2
+      },
+      {
+        "id": 90,
+        "name": "3 MP",
+        "slug": "3-mp",
+        "count": 2
+      },
+      {
+        "id": 1587,
+        "name": "3 MP",
+        "slug": "3-mp",
+        "count": 2
+      },
+      {
+        "id": 1589,
+        "name": "4k 8 MP",
+        "slug": "4k-8-mp",
+        "count": 1
+      },
+      {
+        "id": 93,
+        "name": "4K 8 MP",
+        "slug": "4k-8-mp",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "shape",
+    "slug": "pa_shape",
+    "terms": [
+      {
+        "id": 332,
+        "name": "Double",
+        "slug": "double",
+        "count": 4
+      },
+      {
+        "id": 1607,
+        "name": "Double",
+        "slug": "double",
+        "count": 4
+      },
+      {
+        "id": 331,
+        "name": "Single",
+        "slug": "single",
+        "count": 4
+      },
+      {
+        "id": 1609,
+        "name": "Single",
+        "slug": "single",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "name": "Size",
+    "slug": "pa_size",
+    "terms": [
+      {
+        "id": 39,
+        "name": "120",
+        "slug": "120",
+        "count": 0
+      },
+      {
+        "id": 1553,
+        "name": "120",
+        "slug": "120",
+        "count": 0
+      },
+      {
+        "id": 68,
+        "name": "2 M",
+        "slug": "2-m",
+        "count": 1
+      },
+      {
+        "id": 1555,
+        "name": "2 M",
+        "slug": "2-m",
+        "count": 1
+      },
+      {
+        "id": 69,
+        "name": "5 M",
+        "slug": "5-m",
+        "count": 1
+      },
+      {
+        "id": 1557,
+        "name": "5 M",
+        "slug": "5-m",
+        "count": 1
+      },
+      {
+        "id": 1559,
+        "name": "86",
+        "slug": "86",
+        "count": 0
+      },
+      {
+        "id": 40,
+        "name": "86",
+        "slug": "86",
+        "count": 0
+      },
+      {
+        "id": 1561,
+        "name": "EU",
+        "slug": "eu",
+        "count": 7
+      },
+      {
+        "id": 56,
+        "name": "EU",
+        "slug": "eu",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Style",
+    "slug": "pa_style",
+    "terms": [
+      {
+        "id": 66,
+        "name": "Cartoon",
+        "slug": "cartoon",
+        "count": 1
+      },
+      {
+        "id": 67,
+        "name": "Stars",
+        "slug": "stars",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "TH",
+    "slug": "pa_th",
+    "terms": [
+      {
+        "id": 72,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 1595,
+        "name": "16 A",
+        "slug": "16-a",
+        "count": 1
+      },
+      {
+        "id": 73,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      },
+      {
+        "id": 1597,
+        "name": "20 A",
+        "slug": "20-a",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Width",
+    "slug": "pa_width",
+    "terms": [
+      {
+        "id": 333,
+        "name": "1.75 - 3.00 Meter including installation",
+        "slug": "1-75-3-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 1599,
+        "name": "1.75 - 3.00 Meter including installation",
+        "slug": "1-75-3-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 1601,
+        "name": "2.25 - 4.00 Meter including installation",
+        "slug": "2-25-4-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 334,
+        "name": "2.25 - 4.00 Meter including installation",
+        "slug": "2-25-4-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 1603,
+        "name": "2.75 - 5.00 Meter including installation",
+        "slug": "2-75-5-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 335,
+        "name": "2.75 - 5.00 Meter including installation",
+        "slug": "2-75-5-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 1605,
+        "name": "3.25 - 6.00 Meter including installation",
+        "slug": "3-25-6-00-meter-including-installation",
+        "count": 2
+      },
+      {
+        "id": 336,
+        "name": "3.25 - 6.00 Meter including installation",
+        "slug": "3-25-6-00-meter-including-installation",
+        "count": 2
+      }
+    ]
+  }
+]

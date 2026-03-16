@@ -1,26 +1,163 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f6f6;
+  --foreground: #0a0a0a;
+  --primary: #011ccf;
+  --primary-foreground: #ffffff;
+  --accent: #ffffff;
+  --border: #f1f5f9;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(1, 28, 207, 0.05);
+
+  --font-inter: "Inter", sans-serif;
+  --font-lexend: "Lexend Deca", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-cairo: "Cairo", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --font-sans: var(--font-poppins);
+  --font-heading: var(--font-lexend);
+  --font-arabic: var(--font-cairo);
+
+  --shadow-luxury: 0 10px 40px -10px rgba(1, 28, 207, 0.1);
+  --shadow-glass: var(--glass-shadow);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #fff;
+    --foreground: #0a0a0a;
+    --primary: #011ccf;
+    --primary-foreground: #ffffff;
+    --accent: #ffffff;
+    --border: #f1f5f9;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: var(--font-heading);
+  font-weight: 500;
+}
+
+/* Global Reset for Bold - User requested "nothing bold anywhere" */
+b,
+strong,
+.font-bold,
+.font-black,
+.font-semibold {
+  font-weight: 500 !important;
+}
+
+[dir="rtl"] body,
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] .font-heading {
+  font-family: var(--font-arabic) !important;
+}
+
+/* Global RTL Icon Flips for direction-based icons */
+[dir="rtl"] .lucide-chevron-right,
+[dir="rtl"] .lucide-chevron-left,
+[dir="rtl"] .lucide-arrow-right,
+[dir="rtl"] .lucide-arrow-left {
+  transform: scaleX(-1);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  shadow: var(--shadow-glass);
+}
+
+.luxury-gradient {
+  background: linear-gradient(135deg, #011ccf 0%, #00128a 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #011ccf 0%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.luxury-card {
+  @apply bg-white border-none transition-all duration-500;
+  box-shadow: 0 10px 40px -10px rgba(1, 28, 207, 0.05);
+}
+
+.luxury-card:hover {
+  @apply -translate-y-2;
+  box-shadow: 0 20px 60px -15px rgba(1, 28, 207, 0.1);
+}
+
+/* Scrollbar Utilities */
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* For Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f1f1;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

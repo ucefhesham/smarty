@@ -1,0 +1,82 @@
+
+> smarty@0.1.0 lint
+> eslint
+
+
+D:\Work\smarty\src\app\[locale]\layout.tsx
+  47:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\app\[locale]\page.tsx
+    2:38   warning  'getPage' is defined but never used                              @typescript-eslint/no-unused-vars
+    4:8    warning  'CategorySection' is defined but never used                      @typescript-eslint/no-unused-vars
+   42:9    warning  't' is assigned a value but never used                           @typescript-eslint/no-unused-vars
+   52:46   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   74:38   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  124:38   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  167:55   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  204:106  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+D:\Work\smarty\src\app\[locale]\product\[id]\page.tsx
+    8:10  warning  'ShoppingCart' is defined but never used  @typescript-eslint/no-unused-vars
+    9:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+   17:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  158:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\app\[locale]\shop\page.tsx
+  72:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\components\home\CategorySection.tsx
+   4:10   warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+   6:11   warning  'Category' is defined but never used      @typescript-eslint/no-unused-vars
+  24:102  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\components\home\Hero.tsx
+   5:35  warning  'Zap' is defined but never used         @typescript-eslint/no-unused-vars
+   8:10  warning  'cn' is defined but never used          @typescript-eslint/no-unused-vars
+  11:9   warning  't' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\Work\smarty\src\components\layout\CartIcon.tsx
+  17:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\Work\smarty\src\components\layout\CartIcon.tsx:17:5
+  15 |   // Avoid hydration mismatch
+  16 |   useEffect(() => {
+> 17 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |   }, []);
+  19 |
+  20 |   if (!mounted) return (  react-hooks/set-state-in-effect
+
+D:\Work\smarty\src\components\layout\Header.tsx
+  4:18  warning  'ShoppingCart' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+
+D:\Work\smarty\src\components\product\AddToCartButton.tsx
+  9:76  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\components\product\ProductCard.tsx
+  5:17  warning  'Eye' is defined but never used             @typescript-eslint/no-unused-vars
+  5:22  warning  'ArrowRightLeft' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'cn' is defined but never used              @typescript-eslint/no-unused-vars
+  7:10  warning  'motion' is defined but never used          @typescript-eslint/no-unused-vars
+  9:61  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\components\shop\Sidebar.tsx
+  6:85  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\i18n\request.ts
+   2:10  warning  'notFound' is defined but never used      @typescript-eslint/no-unused-vars
+  12:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\Work\smarty\src\lib\wordpress.ts
+  31:9   warning  'separator' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  57:12  warning  'e' is defined but never used                   @typescript-eslint/no-unused-vars
+
+Γ£û 34 problems (14 errors, 20 warnings)
+

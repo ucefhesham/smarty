@@ -1,0 +1,23 @@
+{
+  "45": "central-control-panel",
+  "46": "smart-wall-switches",
+  "47": "smart-plugs",
+  "49": "smart-lighting",
+  "51": "accessories",
+  "52": "smart-switches",
+  "61": "4g-security-camera",
+  "62": "solar-smart-camera",
+  "63": "smart-intercom",
+  "64": "robot-vacuum",
+  "81": "nvr",
+  "82": "indoor-wifi-camera-2",
+  "84": "outdoor-wifi-camera-2",
+  "87": "smart-lock-2",
+  "94": "smart-water-level",
+  "99": "ac-control-smart",
+  "321": "sensor",
+  "322": "gateway-bridge",
+  "324": "battery-wifi-camera",
+  "330": "zigbee-smart-products",
+  "337": "smart-motorized-curtain-track"
+}
