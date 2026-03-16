@@ -16,20 +16,59 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ locale: string, slug?: string[] }> 
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: 'common' });
   
   if (!slug || slug.length === 0) {
     return {
-      title: 'Shop - Premium Electronics & Home Automation',
-      description: 'Browse our extensive collection of smart home devices, security cameras, and networking solutions.',
+      title: t('shop_all_products'),
+      description: t('site_description'),
+      openGraph: {
+        title: `${t('shop_all_products')} | ${t('title')}`,
+        description: t('site_description'),
+      }
     };
   }
 
-  const titleRaw = slug[slug.length - 1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  const title = decodeURIComponent(titleRaw);
+  const lastSlug = decodeURIComponent(slug[slug.length - 1]);
+  let displayName = lastSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  let seoTitle = "";
+
+  try {
+     if (slug[0] === 'brand' && slug[1]) {
+        const brands = await getBrands(locale);
+        const brand = brands.find((b: any) => b.slug === slug[1] || decodeURIComponent(b.slug) === slug[1]);
+        if (brand) {
+          displayName = brand.name;
+          seoTitle = t('seo_brand_title', { brand: brand.name });
+        }
+     } else {
+        const categories = await getCategories(locale);
+        const category = categories.find((c: any) => c.slug === lastSlug || decodeURIComponent(c.slug) === lastSlug);
+        if (category) {
+          displayName = category.name;
+          seoTitle = t('seo_category_title', { category: category.name });
+        }
+     }
+  } catch (e) {
+     console.error("SEO metadata fetch failed:", e);
+  }
+
+  const cleanName = displayName.includes('%') ? decodeURIComponent(displayName) : displayName;
+  const siteName = t('title');
+  const finalTitle = seoTitle || cleanName;
+
   return {
-    title: `${title} - SmartyJo Shop`,
-    description: `Explore our collection of ${title} products at SmartyJo.`,
+    title: `${finalTitle} | ${siteName}`,
+    description: `${t('explore_tech')} - ${cleanName}`,
+    openGraph: {
+      title: `${finalTitle} | ${siteName}`,
+      description: `${t('explore_tech')} - ${cleanName}`,
+    },
+    twitter: {
+      title: `${finalTitle} | ${siteName}`,
+      description: `${t('explore_tech')} - ${cleanName}`,
+    }
   };
 }
 
@@ -85,15 +124,16 @@ export default async function ShopPage({
   const categoriesBySlug = new Map(allCategories.map(c => [decodeURIComponent(c.slug), c]));
   const categoriesById = new Map(allCategories.map(c => [c.id, c]));
 
-  // Fetch terms for all attributes sequentially to avoid overloading the API
-  const attributesWithTerms = [];
-  for (const attr of allAttributes) {
-    const terms = await getAttributeTerms(String(attr.id), locale);
-    attributesWithTerms.push({ 
-      ...attr, 
-      terms: Array.isArray(terms) ? terms.filter((t: any) => t.count > 0) : [] 
-    });
-  }
+  // Fetch terms for all attributes in parallel to avoid sequential delay
+  const attributesWithTerms = await Promise.all(
+    allAttributes.map(async (attr) => {
+      const terms = await getAttributeTerms(String(attr.id), locale);
+      return { 
+        ...attr, 
+        terms: Array.isArray(terms) ? terms.filter((t: any) => t.count > 0) : [] 
+      };
+    })
+  );
 
   const queryParams = new URLSearchParams();
 

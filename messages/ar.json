@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "سمارتي جو",
+    "title": "سمارتي",
     "site_description": "متجر سمارتي جو للإلكترونيات",
     "search": "البحث عن المنتجات، العلامات التجارية، الفئات...",
     "searching": "جاري البحث",
@@ -18,6 +18,7 @@
     "filter_price": "تصفية حسب السعر",
     "filter": "تصفية",
     "in_stock": "متوفر",
+    "price_from": "من",
     "out_of_stock": "نفدت الكمية",
     "quick_view": "نظرة سريعة",
     "reviews": "مراجعات",
@@ -100,6 +101,8 @@
     "shop_no_products": "لم يتم العثور على منتجات",
     "shop_adjust_filters": "جرّب تغيير الفلاتر أو الأقسام.",
     "shop_reset_filters": "إعادة ضبط الفلاتر",
+    "seo_category_title": "أفضل منتجات {category} للمنزل الذكي | سمارتي",
+    "seo_brand_title": "أفضل منتجات {brand} للمنزل الذكي | سمارتي",
     "shop_show": "عرض",
     "sort_default": "الترتيب الافتراضي",
     "sort_price_asc": "السعر: من الأقل للأعلى",

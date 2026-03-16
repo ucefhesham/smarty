@@ -6,6 +6,31 @@ import PromoSlider from '@/components/home/PromoSlider';
 import CategorySlider from '@/components/home/CategorySlider';
 import React from 'react';
 import lightsBanner from "../../../public/images/lights.png";
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'common' });
+  
+  const siteTitle = t('title');
+  const siteDesc = t('site_description');
+  
+  return {
+    title: {
+      absolute: `${siteTitle} | Smart Electronics & Home Automation`
+    },
+    description: siteDesc,
+    openGraph: {
+      title: `${siteTitle} | Smart Electronics & Home Automation`,
+      description: siteDesc,
+      locale: locale === 'ar' ? 'ar_JO' : 'en_US',
+    },
+    twitter: {
+      title: `${siteTitle} | Smart Electronics & Home Automation`,
+      description: siteDesc,
+    }
+  };
+}
 
 // Static Category Image Imports
 import outdoor_wifi_camera from "../../../public/images/categories/outdoor_wifi_camera.jpeg";

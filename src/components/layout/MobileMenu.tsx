@@ -2,18 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight,  Search,
-  Globe,
-  LayoutGrid,
-  Award,
-  Smartphone,
-  Info
-} from 'lucide-react';
+import { X, ChevronRight, Search, Globe, LayoutGrid, Award, Smartphone } from 'lucide-react';
 import { Link, useRouter, usePathname } from '@/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
 import { JordanFlag, USFlag } from '../ui/Flags';
+import { ICON_MAP } from '@/lib/icons';
 
 interface Category {
   id: number;
@@ -73,8 +68,8 @@ export default function MobileMenu({ categories = [], brands = [] }: MobileMenuP
     }
   };
 
-  // Build category tree (shallow for mobile menu)
-  const categoryTree = categories.filter(cat => cat.parent === 0);
+  // Build category tree (shallow for mobile menu) - Filter out Uncategorized
+  const categoryTree = categories.filter(cat => cat.parent === 0 && cat.slug !== 'uncategorized');
 
   const menuVariants = {
     closed: {
@@ -180,19 +175,29 @@ export default function MobileMenu({ categories = [], brands = [] }: MobileMenuP
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-1"
+                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
                   >
-                    {categoryTree.map((cat) => (
-                      <Link
-                        key={cat.id}
-                        href={`/shop/${cat.slug}`}
-                        className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 active:bg-slate-100 transition-colors group"
-                      >
-                        <span className="text-[15px] font-medium text-slate-700 group-hover:text-primary transition-colors">
-                          {cat.name.replace(/&amp;/g, '&')}
-                        </span>
-                        <ChevronRight size={16} className="text-slate-300 group-hover:text-primary transition-all group-hover:translate-x-1" />
-                      </Link>
-                    ))}
+                    {categoryTree.map((cat) => {
+                      const decodedSlug = decodeURIComponent(cat.slug);
+                      const Icon = ICON_MAP[cat.slug] || ICON_MAP[decodedSlug] || LayoutGrid;
+                      return (
+                        <Link
+                          key={cat.id}
+                          href={`/shop/${cat.slug}`}
+                          className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 active:bg-slate-100 transition-colors group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                              <Icon size={20} />
+                            </div>
+                            <span className="text-[15px] font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+                              {cat.name.replace(/&amp;/g, '&')}
+                            </span>
+                          </div>
+                          <ChevronRight size={16} className={cn("text-slate-300 group-hover:text-primary transition-all group-hover:translate-x-1", locale === 'ar' && "rotate-180 group-hover:-translate-x-1")} />
+                        </Link>
+                      );
+                    })}
                   </motion.div>
                 ) : (
                   <motion.div
@@ -201,6 +206,7 @@ export default function MobileMenu({ categories = [], brands = [] }: MobileMenuP
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="grid grid-cols-2 gap-3"
+                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
                   >
                     {brands.map((brand) => (
                       <Link

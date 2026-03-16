@@ -45,51 +45,7 @@ interface Category {
   slug: string;
 }
 
-const DEFAULT_ICON = LayoutGrid;
-const ICON_MAP: Record<string, React.ElementType> = {
-  'laptops': Monitor,
-  'tablets': Smartphone,
-  'smartphones': Smartphone,
-  'audio': Speaker,
-  'wearables': Watch,
-  'gaming': Gamepad2,
-  'smart-home': Zap,
-  'tv': Tv,
-  'cameras': Camera,
-  'hardware': Cpu,
-  'accessories': Keyboard,
-  'security': ShieldCheck,
-  'amazon-alexa': Speaker,
-  'google': Cloud,
-  'home-appliances': WashingMachine,
-  'limited-time-offer': Flame,
-  'network-access-points': Router,
-  'robot-vacuum': Disc,
-  'smart-intercom': Bell,
-  'smart-lock-2': Lock,
-  'voice-assistant': Mic2,
-  'wifi-smart-camera': Cctv,
-  'smart-switches': Zap,
-  'مفاتيح-ذكية-ذاتية-التركيب': Zap,
-  'أمازون-أليكسا': Speaker,
-  'جوجل': Cloud,
-  'الأجهزة-المنزلية': WashingMachine,
-  'عرض-لفترة-محدودة': Flame,
-  'الشبكات-ونقاط-الوصول': Router,
-  'مكنسة-روبوت': Disc,
-  'اجهزة-انتركوم-ذكية': Bell,
-  'اقفال-ذكية': Lock,
-  'مساعد-صوتي': Mic2,
-  'كاميرات-ذكية-لاسلكية': Cctv,
-  'إضاءة-ذكية': Lightbulb,
-  'مقابس-ذكية': Plug,
-  'مفاتيح-الحائط-بتقنية-واي-فاي': Zap,
-  'smart-lighting': Lightbulb,
-  'lighting': Lightbulb,
-  'smart-lock': Lock,
-  'smart-plugs': Plug,
-  'audio-gear': Speaker,
-};
+import { ICON_MAP, DEFAULT_ICON } from '@/lib/icons';
 
 const SORT_ORDER = [
   'amazon-alexa',

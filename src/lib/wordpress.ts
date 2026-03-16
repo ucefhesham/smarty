@@ -237,17 +237,17 @@ export async function getProducts(query = '', lang = 'en'): Promise<GetProductsR
         }
       }
 
-      // Handle Attributes (e.g., pa_color, pa_size)
-      // Note: WP REST API taxonomy filtering usually works with term IDs
-      for (const [taxonomy, slug] of Object.entries(attributeFilters)) {
-        // We need the ID for the term slug
-        const terms = await getAttributeTerms(taxonomy, lang);
-        const termsBySlug = new Map<string, any>(terms.map((t: any) => [t.slug, t]));
-        const term = termsBySlug.get(slug);
-        if (term) {
-          filterQuery += `&${taxonomy}=${term.id}`;
-        }
-      }
+      // Handle Attributes (e.g., pa_color, pa_size) in parallel
+      const attributeResults = await Promise.all(
+        Object.entries(attributeFilters).map(async ([taxonomy, slug]) => {
+          const terms = await getAttributeTerms(taxonomy, lang);
+          const termsBySlug = new Map<string, any>(terms.map((t: any) => [t.slug, t]));
+          const term = termsBySlug.get(slug);
+          return term ? `&${taxonomy}=${term.id}` : '';
+        })
+      );
+      
+      filterQuery += attributeResults.join('');
 
       if (filterQuery) {
         // Fetch product IDs from WordPress API

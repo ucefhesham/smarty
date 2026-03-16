@@ -266,9 +266,16 @@ export default function ProductCard({ product }: { product: any }) {
                 {product.regular_price} JOD
               </span>
             )}
-            <span className="text-base font-bold text-primary">
-              {product.price} JOD
-            </span>
+            <div className="flex items-baseline gap-1">
+              {product.type === 'variable' && (
+                <span className="text-[10px] uppercase font-bold text-slate-400">
+                  {t('price_from')}
+                </span>
+              )}
+              <span className="text-base font-bold text-primary">
+                {product.price} JOD
+              </span>
+            </div>
           </div>
         </div>
 

@@ -13,7 +13,7 @@ export default function PageLoader() {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);

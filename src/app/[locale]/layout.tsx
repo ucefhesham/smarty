@@ -22,10 +22,42 @@ const cairo = Cairo({ subsets: ["arabic"], variable: "--font-cairo" });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | SmartyJo",
-    default: "SmartyJo | Smart Electronics & Home Automation"
+    template: "%s",
+    default: "Smarty | Smart Electronics & Home Automation"
   },
-  description: "Experience the future of smart living with SmartyJo. High-quality electronics and home automation solutions in Jordan.",
+  description: "Experience the future of smart living with Smarty. High-quality electronics and home automation solutions in Jordan.",
+  keywords: ["Smart Home", "Home Automation", "Electronics", "Jordan", "Smarty", "IoT", "Security Cameras"],
+  authors: [{ name: "Smarty" }],
+  metadataBase: new URL('https://smartyjo.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en-US': '/en',
+      'ar-JO': '/ar',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://smartyjo.com',
+    siteName: 'Smarty',
+    title: 'Smarty | Smart Electronics & Home Automation',
+    description: 'Experience the future of smart living with Smarty. High-quality electronics and home automation solutions in Jordan.',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Smarty Smart Home Solutions',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Smarty | Smart Electronics & Home Automation',
+    description: 'Experience the future of smart living with Smarty. High-quality electronics and home automation solutions in Jordan.',
+    images: ['/images/twitter-image.jpg'],
+  },
   icons: {
     icon: "/favicon.ico",
   }

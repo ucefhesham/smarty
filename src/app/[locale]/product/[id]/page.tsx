@@ -29,15 +29,37 @@ async function getProduct(idOrSlug: string, lang = 'en') {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string, locale: string }> }): Promise<Metadata> {
   const { id, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'common' });
   const product = await getProduct(id, locale);
-  if (!product) return { title: 'Product Not Found' };
+  
+  if (!product) return { title: t('shop_no_products') };
 
   const productName = product.name.includes('%') ? decodeURIComponent(product.name) : product.name;
+  const description = product.short_description 
+    ? product.short_description.replace(/<[^>]*>?/gm, '').substring(0, 160).trim()
+    : productName;
+  const siteName = t('title');
 
   return {
-    title: productName,
-    description: product.short_description?.replace(/<[^>]*>?/gm, '').substring(0, 160),
+    title: `${productName} | ${siteName}`,
+    description: description,
     openGraph: {
+      title: `${productName} | ${siteName}`,
+      description: description,
+      type: 'article',
+      images: product.images?.[0] ? [
+        {
+          url: product.images[0].src,
+          width: 800,
+          height: 800,
+          alt: productName,
+        }
+      ] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${productName} | ${siteName}`,
+      description: description,
       images: product.images?.[0] ? [product.images[0].src] : [],
     },
   };
