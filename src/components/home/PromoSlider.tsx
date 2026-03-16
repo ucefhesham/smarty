@@ -1,6 +1,7 @@
 import { getProducts, getCategories } from '@/lib/wordpress';
 import PromoSliderClient from './PromoSliderClient';
 import { getTranslations } from 'next-intl/server';
+import ProductSkeleton from '@/components/product/ProductSkeleton';
 
 interface PromoSliderProps {
   categoryId?: string;
@@ -80,5 +81,29 @@ export default async function PromoSlider({
       viewAllText={t('view_all')}
       shopNowText={t('shop_now')}
     />
+  );
+}
+
+
+
+export function PromoSliderSkeleton() {
+  return (
+    <section className="py-12 px-4 md:px-12 lg:px-20 max-w-[1600px] mx-auto overflow-hidden animate-pulse">
+      <div className="bg-slate-50 rounded-[40px] h-[500px] flex items-center p-12">
+        <div className="w-1/3 space-y-4">
+          <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+          <div className="h-12 bg-slate-200 rounded w-3/4"></div>
+          <div className="h-20 bg-slate-200 rounded w-full"></div>
+          <div className="h-12 bg-slate-200 rounded-full w-40"></div>
+        </div>
+        <div className="flex-grow flex gap-4 ml-12">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex-shrink-0 w-64 h-80 bg-white rounded-2xl shadow-sm">
+                <ProductSkeleton />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

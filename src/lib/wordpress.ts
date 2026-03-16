@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { cache } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
 
@@ -89,11 +90,15 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 3, ba
         return response;
       }
       
-      console.warn(`Fetch attempt ${i + 1} failed with status ${response.status}. Retrying in ${backoff * (i + 1)}ms...`);
+      if (i > 0) {
+        console.warn(`Fetch attempt ${i + 1} for ${url} failed with status ${response.status}. Retrying...`);
+      }
       lastError = new Error(`Status ${response.status}: ${response.statusText}`);
     } catch (error: any) {
       lastError = error;
-      console.warn(`Fetch attempt ${i + 1} failed with error: ${error.message}. Retrying in ${backoff * (i + 1)}ms...`);
+      if (i > 0) {
+        console.warn(`Fetch attempt ${i + 1} for ${url} failed with error: ${error.message}. Retrying...`);
+      }
     }
     
     if (i < retries - 1) {
@@ -182,7 +187,7 @@ export async function fetchFromWP(endpoint: string, options: RequestInit = {}): 
   return data;
 }
 
-export async function getProducts(query = '', lang = 'en'): Promise<GetProductsResponse> {
+export const getProducts = cache(async (query = '', lang = 'en'): Promise<GetProductsResponse> => {
   const baseParams = new URLSearchParams(query.startsWith('?') ? query.slice(1) : query);
   if (!baseParams.has('lang')) baseParams.set('lang', lang);
   
@@ -302,7 +307,7 @@ export async function getProducts(query = '', lang = 'en'): Promise<GetProductsR
     total: products.length,
     totalPages: 1
   };
-}
+});
 
 export async function searchProducts(query: string, lang = 'en', perPage = 5): Promise<Product[]> {
   const res = await fetchFromWP(`/wc/v3/products?search=${encodeURIComponent(query)}&lang=${lang}&per_page=${perPage}&status=publish`);
@@ -324,10 +329,10 @@ export async function getProductVariations(productId: number, lang = 'en') {
   return Array.isArray(res) ? res : (res.data || []);
 }
 
-export async function getCategories(lang = 'en') {
+export const getCategories = cache(async (lang = 'en') => {
   try {
     const res = await fetchFromWP(`/wc/v3/products/categories?lang=${lang}&per_page=100`, { 
-      next: { revalidate: 86400 } // 24 hours for categories
+      next: { revalidate: 86400 }
     });
     const data = res.data || res;
     return Array.isArray(data) ? data : [];
@@ -343,12 +348,12 @@ export async function getCategories(lang = 'en') {
     }
     return [];
   }
-}
+});
 
-export async function getBrands(lang = 'en') {
+export const getBrands = cache(async (lang = 'en') => {
   try {
     const res = await fetchFromWP(`/wp/v2/product_brand?lang=${lang}&per_page=100`, { 
-      next: { revalidate: 86400 } // 24 hours for brands
+      next: { revalidate: 86400 }
     });
     const data = res.data || res;
     return Array.isArray(data) ? data : [];
@@ -364,7 +369,7 @@ export async function getBrands(lang = 'en') {
     }
     return [];
   }
-}
+});
 
 export async function getPage(slug: string, lang = 'en') {
   const pages = await fetchFromWP(`/wp/v2/pages?slug=${slug}&lang=${lang}`);
@@ -372,8 +377,6 @@ export async function getPage(slug: string, lang = 'en') {
 }
 
 export async function getMenus() {
-  // WordPress menus often need a specific plugin or custom endpoint
-  // For now, we'll try a common one or mock it
   try {
     return await fetchFromWP('/wp-api-menus/v2/menus');
   } catch (e) {
@@ -382,7 +385,7 @@ export async function getMenus() {
   }
 }
 
-export async function getAttributes(lang = 'en') {
+export const getAttributes = cache(async (lang = 'en') => {
   try {
     const res = await fetchFromWP(`/wc/v3/products/attributes?lang=${lang}`, {
       next: { revalidate: 86400 }
@@ -400,9 +403,9 @@ export async function getAttributes(lang = 'en') {
     }
     return [];
   }
-}
+});
 
-export async function getAttributeTerms(taxonomy: string, lang = 'en') {
+export const getAttributeTerms = cache(async (taxonomy: string, lang = 'en') => {
   try {
     let attrId = taxonomy;
     if (isNaN(Number(taxonomy))) {
@@ -417,10 +420,11 @@ export async function getAttributeTerms(taxonomy: string, lang = 'en') {
     });
     return Array.isArray(res) ? res : (res.data || []);
   } catch (e) {
-    console.error(`getAttributeTerms error for ${taxonomy}:`, e);
+    // Fail silently to avoid breaking the UI, but log for debugging
+    console.warn(`getAttributeTerms failed for ${taxonomy}, returning empty:`, e instanceof Error ? e.message : e);
     return [];
   }
-}
+});
 // Simple PHP serialized string parser for WPC option data
 function parsePhpSerialized(str: string): any {
   try {

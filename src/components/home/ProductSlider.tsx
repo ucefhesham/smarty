@@ -1,6 +1,7 @@
 import { getProducts, getCategories, getBrands } from '@/lib/wordpress';
 import ProductSliderClient from './ProductSliderClient';
 import { getTranslations } from 'next-intl/server';
+import ProductSkeleton from '@/components/product/ProductSkeleton';
 
 interface ProductSliderProps {
   categoryId?: string;
@@ -96,5 +97,25 @@ export default async function ProductSlider({
       viewAllLink={viewAllLink}
       viewAllText={t('view_all')}
     />
+  );
+}
+
+
+
+export function ProductSliderSkeleton() {
+  return (
+    <section className="py-8 md:py-12 px-4 md:px-12 lg:px-20 max-w-[1600px] mx-auto overflow-hidden">
+      <div className="flex items-center justify-between mb-8 animate-pulse">
+        <div className="h-8 bg-slate-100 rounded-lg w-48"></div>
+        <div className="h-10 bg-slate-100 rounded-full w-32"></div>
+      </div>
+      <div className="flex gap-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex-shrink-0 w-[calc(50%-10px)] md:w-[calc(25%-15px)] lg:w-[calc(20%-16px)]">
+            <ProductSkeleton />
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

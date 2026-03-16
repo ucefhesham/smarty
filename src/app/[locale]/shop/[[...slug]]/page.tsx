@@ -1,5 +1,5 @@
 import { Link } from '@/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { cn } from '@/lib/utils';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -10,6 +10,34 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import Sidebar from '@/components/shop/Sidebar';
 import ShopToolbar from '@/components/shop/ShopToolbar';
 import Pagination from '@/components/shop/Pagination';
+import SidebarServer from '@/components/shop/SidebarServer';
+import ProductGridServer from '@/components/shop/ProductGridServer';
+import ProductSkeleton from '@/components/product/ProductSkeleton';
+
+function SidebarSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse p-6 bg-white rounded-2xl shadow-sm">
+      <div className="h-8 bg-slate-100 rounded-lg w-1/2 mb-6"></div>
+      <div className="space-y-4">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div key={i} className="h-10 bg-slate-50 rounded-xl w-full"></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProductGridSkeleton() {
+  return (
+    <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3">
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+        <div key={i} className="bg-white rounded-[20px] shadow-sm animate-pulse border border-slate-100">
+            <ProductSkeleton />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export async function generateMetadata({ 
   params 
@@ -74,7 +102,7 @@ export async function generateMetadata({
 
 export default async function ShopPage({ 
   params,
-  searchParams 
+  searchParams
 }: { 
   params: Promise<{ locale: string, slug?: string[] }>,
   searchParams: Promise<{ 
@@ -93,47 +121,30 @@ export default async function ShopPage({
 }) {
   const [
     { locale, slug }, 
-    { min_price, max_price, orderby, order, per_page, view, page, search }
+    allSearchParams
   ] = await Promise.all([
     params,
     searchParams
   ]);
-
-  const allSearchParams = await searchParams; // To access dynamic keys
   
+  const { min_price, max_price, orderby, order, per_page, view, page, search } = allSearchParams;
+
   setRequestLocale(locale);
   const t = await getTranslations('common');
   
-  // 1. Resolve Category or Brand from slug
+  // 1. Resolve Category or Brand from slug (Quick lookup using cached data)
   let categoryId: string | undefined = undefined;
   let brandSlugArg: string | undefined = undefined;
 
-  const [categories, realBrands, rawAttributes] = await Promise.all([
+  const [allCategories, allBrands] = await Promise.all([
     getCategories(locale),
-    getBrands(locale),
-    getAttributes(locale)
+    getBrands(locale)
   ]);
 
-  const allCategories = Array.isArray(categories) ? categories : [];
-  const allBrands = Array.isArray(realBrands) ? realBrands : [];
-  const allAttributes = Array.isArray(rawAttributes) ? rawAttributes : [];
-
-  // PREPARE LOOKUPS ONCE PER REQUEST
-  const brandsBySlug = new Map(allBrands.map(b => [decodeURIComponent(b.slug), b]));
-  const brandsById = new Map(allBrands.map(b => [b.id, b]));
-  const categoriesBySlug = new Map(allCategories.map(c => [decodeURIComponent(c.slug), c]));
-  const categoriesById = new Map(allCategories.map(c => [c.id, c]));
-
-  // Fetch terms for all attributes in parallel to avoid sequential delay
-  const attributesWithTerms = await Promise.all(
-    allAttributes.map(async (attr) => {
-      const terms = await getAttributeTerms(String(attr.id), locale);
-      return { 
-        ...attr, 
-        terms: Array.isArray(terms) ? terms.filter((t: any) => t.count > 0) : [] 
-      };
-    })
-  );
+  const brandsBySlug = new Map(allBrands.map((b: any) => [decodeURIComponent(b.slug), b]));
+  const brandsById = new Map(allBrands.map((b: any) => [b.id, b]));
+  const categoriesBySlug = new Map(allCategories.map((c: any) => [decodeURIComponent(c.slug), c]));
+  const categoriesById = new Map(allCategories.map((c: any) => [c.id, c]));
 
   const queryParams = new URLSearchParams();
 
@@ -148,46 +159,16 @@ export default async function ShopPage({
   if (slug && slug.length > 0) {
     if (slug[0] === 'brand' && slug[1]) {
       brandSlugArg = decodeURIComponent(slug[1]);
-      
-      const b = brandsBySlug.get(brandSlugArg);
+      const b = brandsBySlug.get(brandSlugArg) as any;
       if (b) {
         queryParams.set('product_brand', String(b.id));
         queryParams.set('brand', String(b.id));
-      } else {
-        // Brand redirect logic
-        const otherLocale = locale === 'en' ? 'ar' : 'en';
-        const otherBrands = await getBrands(otherLocale);
-        const bOther = (otherBrands || []).find((b: any) => decodeURIComponent(b.slug) === brandSlugArg);
-        
-        if (bOther && bOther.translations && bOther.translations[locale]) {
-          const targetId = bOther.translations[locale];
-          const targetBrand = brandsById.get(targetId);
-          if (targetBrand) {
-            redirect({ href: `/shop/brand/${targetBrand.slug}`, locale });
-          }
-        }
-        queryParams.set('brand', brandSlugArg); 
       }
     } else {
       const slugToFind = slug[slug.length - 1];
       const decodedSlugToFind = decodeURIComponent(slugToFind);
-      let cat = categoriesBySlug.get(decodedSlugToFind);
-      
-      if (!cat) {
-        const otherLocale = locale === 'en' ? 'ar' : 'en';
-        const otherCategories = await getCategories(otherLocale);
-        const otherCat = (otherCategories || []).find((c: any) => decodeURIComponent(c.slug) === decodedSlugToFind);
-        
-        if (otherCat && otherCat.translations && otherCat.translations[locale]) {
-          const targetId = otherCat.translations[locale];
-          const targetCat = categoriesById.get(targetId);
-          if (targetCat) {
-             redirect({ href: `/shop/${targetCat.slug}`, locale });
-          }
-        }
-      } else {
-        categoryId = String(cat.id);
-      }
+      let cat = categoriesBySlug.get(decodedSlugToFind) as any;
+      if (cat) categoryId = String(cat.id);
     }
   }
 
@@ -203,85 +184,55 @@ export default async function ShopPage({
   queryParams.set('per_page', per_page || '12');
   queryParams.set('page', page || '1');
   
-  const { products: displayProducts, total, totalPages } = await getProducts(queryParams.toString(), locale);
-
   const displayNameRaw = search
     ? `${t('search_results')}: "${search}"`
     : categoryId 
-      ? categoriesById.get(Number(categoryId))?.name 
+      ? (categoriesById.get(Number(categoryId)) as any)?.name 
       : brandSlugArg
-        ? brandsBySlug.get(brandSlugArg)?.name || brandSlugArg
+        ? (brandsBySlug.get(brandSlugArg) as any)?.name || brandSlugArg
         : t('shop_all_products');
 
   const displayName = displayNameRaw?.includes('%') ? decodeURIComponent(displayNameRaw) : displayNameRaw;
-
-  const gridClasses = cn(
-    "grid gap-4 md:gap-6",
-    view === 'list_small' && "grid-cols-1",
-    (!view || view === 'grid_mobile') && "grid-cols-2 lg:grid-cols-3",
-    view === 'list' && "grid-cols-1",
-    view === 'grid_4' && "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
-    view === 'grid_3' && "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-  );
 
   return (
     <div className="bg-[#f6f6f6] min-h-screen">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-4 md:py-12 pt-4 md:pt-8">
         
-        {/* Mobile Title - Appears at the very top on mobile only */}
+        {/* Mobile Title */}
         <div className="mb-6 md:hidden">
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             {displayName}
           </h1>
-          <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">
-            {total} {t('products')}
-          </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">
           <aside className="w-full lg:w-72 shrink-0">
-            <Sidebar 
-              categories={allCategories} 
-              brands={allBrands} 
-              attributes={attributesWithTerms}
-              activeCategory={categoryId} 
-              activeBrand={brandSlugArg}
-            />
+            <Suspense fallback={<SidebarSkeleton />}>
+              <SidebarServer 
+                locale={locale} 
+                activeCategory={categoryId} 
+                activeBrand={brandSlugArg} 
+              />
+            </Suspense>
           </aside>
 
           <div className="flex-grow">
              <ShopToolbar 
                 categoryName={displayName}
-                totalProducts={total}
+                totalProducts={0} // Will be updated by client if needed or omitted
                 perPage={per_page}
                 orderby={orderby}
                 order={order}
              />
 
-             <div className={gridClasses}>
-                {displayProducts.map((product: any) => (
-                   <ProductCard key={product.id} product={product} />
-                ))}
-             </div>
-
-             {totalPages > 1 && (
-               <div className="mt-12 flex justify-center">
-                 <Pagination 
-                   currentPage={parseInt(page || '1', 10)} 
-                   totalPages={totalPages} 
-                 />
-               </div>
-             )}
-             
-             {displayProducts.length === 0 && (
-               <div className="py-20 text-center space-y-4 bg-white rounded-[10px] shadow-luxury border border-slate-100 mt-8">
-                  <h3 className="text-2xl font-bold">{t('shop_no_products')}</h3>
-                  <p className="text-muted-foreground">{t('shop_adjust_filters')}</p>
-                  <Link href="/shop" className="inline-block bg-primary text-white px-8 py-3 rounded-full font-bold hover:bg-slate-900 transition-all">
-                     {t('shop_reset_filters')}
-                  </Link>
-               </div>
-             )}
+             <Suspense fallback={<ProductGridSkeleton />}>
+                <ProductGridServer 
+                  locale={locale} 
+                  queryParams={queryParams.toString()} 
+                  view={view} 
+                  page={page} 
+                />
+             </Suspense>
           </div>
         </div>
       </div>

@@ -4,9 +4,12 @@ import BrandCarousel from '@/components/home/BrandCarousel';
 import ProductSlider from '@/components/home/ProductSlider';
 import PromoSlider from '@/components/home/PromoSlider';
 import CategorySlider from '@/components/home/CategorySlider';
-import React from 'react';
+import React, { Suspense } from 'react';
 import lightsBanner from "../../../public/images/lights.png";
 import { Metadata } from 'next';
+import { CategorySliderSkeleton } from '@/components/home/CategorySlider';
+import { ProductSliderSkeleton } from '@/components/home/ProductSlider';
+import { PromoSliderSkeleton } from '@/components/home/PromoSlider';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -77,60 +80,72 @@ export default async function HomePage({
       <BrandCarousel />
 
       <div className="mb-2 mt-2 md:mt-8 space-y-1 md:space-y-2">
-        <CategorySlider categories={[
-          { id: 'outdoor_wifi_camera', img: outdoor_wifi_camera, slug: 'outdoor-wifi-camera-2' },
-          { id: 'solar_smart_cameras', img: solar_smart_cameras, slug: 'solar-smart-camera' },
-          { id: 'robot_vacuum', img: robot_vacuum, slug: 'robot-vacuum' },
-          { id: 'smart_intercom', img: smart_intercom, slug: 'smart-intercom' },
-          { id: 'smart_locks', img: smart_locks, slug: 'smart-lock-2' },
-          { id: 'zigbee_products', img: zigbee_products, slug: 'zigbee-smart-products' },
-          { id: '4g_cameras', img: cameras_4g, slug: '4g-security-camera' },
-          { id: 'battery_cameras', img: battery_cameras, slug: 'battery-wifi-camera' },
-          { id: 'indoor_wifi_camera', img: indoor_wifi_camera, slug: 'indoor-wifi-camera-2' },
-          { id: 'nvr', img: nvr, slug: 'nvr' }
-        ]} />
-        <CategorySlider categories={[
-          { id: 'smart_ac_control', img: smart_ac_control, slug: 'ac-control-smart' },
-          { id: 'gateway_bridge', img: gateway_bridge, slug: 'gateway-bridge' },
-          { id: 'smart_lighting', img: smart_lighting, slug: 'smart-lighting' },
-          { id: 'central_control_panel', img: central_control_panel, slug: 'central-control-panel' },
-          { id: 'diy_smart_switches', img: diy_smart_switches, slug: 'smart-switches' },
-          { id: 'sensors', img: sensors, slug: 'sensor' },
-          { id: 'accessories', img: accessories, slug: 'accessories' },
-          { id: 'wifi_wall_switches', img: wifi_wall_switches, slug: 'smart-wall-switches' },
-          { id: 'water_level_meter', img: water_level_meter, slug: 'smart-water-level' },
-          { id: 'smart_curtains', img: smart_curtains, slug: 'smart-motorized-curtain-track' },
-          { id: 'smart_plugs', img: smart_plugs, slug: 'smart-plugs' }
-        ]} />
+        <Suspense fallback={<CategorySliderSkeleton />}>
+          <CategorySlider categories={[
+            { id: 'outdoor_wifi_camera', img: outdoor_wifi_camera, slug: 'outdoor-wifi-camera-2' },
+            { id: 'solar_smart_cameras', img: solar_smart_cameras, slug: 'solar-smart-camera' },
+            { id: 'robot_vacuum', img: robot_vacuum, slug: 'robot-vacuum' },
+            { id: 'smart_intercom', img: smart_intercom, slug: 'smart-intercom' },
+            { id: 'smart_locks', img: smart_locks, slug: 'smart-lock-2' },
+            { id: 'zigbee_products', img: zigbee_products, slug: 'zigbee-smart-products' },
+            { id: '4g_cameras', img: cameras_4g, slug: '4g-security-camera' },
+            { id: 'battery_cameras', img: battery_cameras, slug: 'battery-wifi-camera' },
+            { id: 'indoor_wifi_camera', img: indoor_wifi_camera, slug: 'indoor-wifi-camera-2' },
+            { id: 'nvr', img: nvr, slug: 'nvr' }
+          ]} />
+        </Suspense>
+        <Suspense fallback={<CategorySliderSkeleton />}>
+          <CategorySlider categories={[
+            { id: 'smart_ac_control', img: smart_ac_control, slug: 'ac-control-smart' },
+            { id: 'gateway_bridge', img: gateway_bridge, slug: 'gateway-bridge' },
+            { id: 'smart_lighting', img: smart_lighting, slug: 'smart-lighting' },
+            { id: 'central_control_panel', img: central_control_panel, slug: 'central-control-panel' },
+            { id: 'diy_smart_switches', img: diy_smart_switches, slug: 'smart-switches' },
+            { id: 'sensors', img: sensors, slug: 'sensor' },
+            { id: 'accessories', img: accessories, slug: 'accessories' },
+            { id: 'wifi_wall_switches', img: wifi_wall_switches, slug: 'smart-wall-switches' },
+            { id: 'water_level_meter', img: water_level_meter, slug: 'smart-water-level' },
+            { id: 'smart_curtains', img: smart_curtains, slug: 'smart-motorized-curtain-track' },
+            { id: 'smart_plugs', img: smart_plugs, slug: 'smart-plugs' }
+          ]} />
+        </Suspense>
       </div>
 
       <div className="space-y-4 md:space-y-8">
-        <ProductSlider
-          categorySlug="amazon-alexa"
-          title={t('alexa_title')}
-          locale={locale}
-        />
+        <Suspense fallback={<ProductSliderSkeleton />}>
+          <ProductSlider
+            categorySlug="amazon-alexa"
+            title={t('alexa_title')}
+            locale={locale}
+          />
+        </Suspense>
 
-        <ProductSlider
-          categorySlug="smart-lock-2"
-          title={t('locks_title')}
-          locale={locale}
-        />
+        <Suspense fallback={<ProductSliderSkeleton />}>
+          <ProductSlider
+            categorySlug="smart-lock-2"
+            title={t('locks_title')}
+            locale={locale}
+          />
+        </Suspense>
 
-        <ProductSlider
-          brandSlug="sonoff"
-          title={t('sonoff_title')}
-          locale={locale}
-        />
+        <Suspense fallback={<ProductSliderSkeleton />}>
+          <ProductSlider
+            brandSlug="sonoff"
+            title={t('sonoff_title')}
+            locale={locale}
+          />
+        </Suspense>
 
-        <PromoSlider
-          categorySlug="smart-lighting"
-          title={t('promo_title')}
-          bannerTitle={t('banner_title')}
-          bannerSubtitle={t('banner_subtitle')}
-          bannerImage={lightsBanner}
-          locale={locale}
-        />
+        <Suspense fallback={<PromoSliderSkeleton />}>
+          <PromoSlider
+            categorySlug="smart-lighting"
+            title={t('promo_title')}
+            bannerTitle={t('banner_title')}
+            bannerSubtitle={t('banner_subtitle')}
+            bannerImage={lightsBanner}
+            locale={locale}
+          />
+        </Suspense>
       </div>
     </section>
   );

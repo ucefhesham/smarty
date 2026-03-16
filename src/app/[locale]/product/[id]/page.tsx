@@ -14,6 +14,8 @@ import ProductAttributes from '@/components/product/ProductAttributes';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RefreshCw, Star, Share2, Facebook, Twitter, Instagram as InstagramIcon, Linkedin, Grid, ChevronLeft, ChevronRight, Tags, MessageCircle, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from '@/navigation';
+import { Suspense } from 'react';
+import RelatedProductsServer, { RelatedProductsSkeleton } from '@/components/product/RelatedProductsServer';
 
 async function getProduct(idOrSlug: string, lang = 'en') {
   if (/^\d+$/.test(idOrSlug)) {
@@ -77,8 +79,8 @@ export default async function ProductPage({
   setRequestLocale(locale);
   const isRtl = locale === 'ar';
 
-  // 1. Fetch main product
-  let product = await getProduct(idOrSlug, locale);
+  // 1. Fetch main product (Critical Path)
+  const product = await getProduct(idOrSlug, locale);
 
   // Automatic Translation Switching Logic for Product
   if (!product) {
@@ -98,14 +100,15 @@ export default async function ProductPage({
     notFound();
   }
 
-  // 2. Fetch everything else in parallel
-  const [translations, relatedData, wpcData, variations] = await Promise.all([
+  // 2. Prepare non-critical data in parallel
+  const [t, variations, categoryOptions] = await Promise.all([
     getTranslations('common'),
     (async () => {
-      const relatedIds = product.related_ids?.slice(0, 4) || [];
-      return relatedIds.length > 0 
-        ? getProducts(`include=${relatedIds.join(',')}`, locale)
-        : { products: [] };
+      if (product.type === 'variable') {
+        const { getProductVariations } = await import('@/lib/wordpress');
+        return getProductVariations(product.id, locale);
+      }
+      return [];
     })(),
     (async () => {
       if (!product.categories || product.categories.length === 0) return null;
@@ -114,19 +117,8 @@ export default async function ProductPage({
         product.categories.map((cat: any) => getCategoryWPC(cat.name, locale))
       );
       return results.filter(res => res !== null)[0] || null;
-    })(),
-    (async () => {
-      if (product.type === 'variable') {
-        const { getProductVariations } = await import('@/lib/wordpress');
-        return getProductVariations(product.id, locale);
-      }
-      return [];
     })()
   ]);
-
-  const t = translations;
-  const { products: relatedProducts } = relatedData;
-  const categoryOptions = wpcData;
 
   const isOutOfStock = product.stock_status === 'outofstock';
 
@@ -281,21 +273,13 @@ export default async function ProductPage({
          </div>
       </div>
 
-      {/* Related Products */}
-      <div className="bg-slate-50 py-24">
-         <div className="max-w-[1440px] mx-auto px-8">
-            <div className="text-center mb-16">
-               <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-4">{t('related_products')}</h2>
-               <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {relatedProducts.map((p: any) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-           </div>
-        </div>
-      </div>
+      {/* Related Products - Streamed */}
+      <Suspense fallback={<RelatedProductsSkeleton />}>
+        <RelatedProductsServer 
+          relatedIds={product.related_ids || []} 
+          locale={locale} 
+        />
+      </Suspense>
     </div>
   );
 }

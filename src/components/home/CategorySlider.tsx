@@ -74,3 +74,23 @@ export default async function CategorySlider({ categories }: CategorySliderProps
 
   return <CategorySliderClient categories={localizedCategories} />;
 }
+
+export function CategorySliderSkeleton() {
+  return (
+    <div className="relative px-4 md:px-12 lg:px-24 max-w-[1600px] mx-auto mb-4 md:mb-10 mt-1 md:mt-4 overflow-hidden">
+      <div className="flex gap-2 md:gap-12 py-2 md:py-8">
+        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <div key={i} className="flex-shrink-0 w-[calc((100%-1.5rem)/2.5)] sm:w-[calc((100%-3rem)/4)] lg:w-[calc((100%-6*2rem)/7)] animate-pulse">
+            <div className="bg-white border border-slate-100 rounded-[10px] p-2 md:p-4 shadow-sm h-full">
+              <div className="aspect-square bg-slate-50 rounded-lg mb-4" />
+              <div className="space-y-2">
+                <div className="h-3 bg-slate-100 rounded w-3/4 mx-auto" />
+                <div className="h-2 bg-slate-50 rounded w-1/2 mx-auto" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
